@@ -14,7 +14,7 @@ public:
         m_transform = physx::PxTransform(physx::PxVec3(0.0f, 10.0f, 0.0f));
 
         // Se registra el RenderItem exactamente como en la plantilla original
-        m_renderItem = new RenderItem(shape, &m_transform, Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+        m_centroEscena = new RenderItem(shape, &m_transform, Vector4(1.0f, 0.0f, 0.0f, 1.0f));
     }
 
     void update(double dt) override {
@@ -29,13 +29,13 @@ public:
     }
 
     void cleanup() override {
-        if (m_renderItem) {
-            m_renderItem->release(); // Deregistra y destruye el item
-            m_renderItem = nullptr;
+        if (m_centroEscena) {
+            m_centroEscena->release(); // Deregistra y destruye el item
+            m_centroEscena = nullptr;
         }
     }
 
 private:
     physx::PxTransform m_transform;
-    RenderItem* m_renderItem{ nullptr };
+    RenderItem* m_centroEscena{ nullptr };
 };
