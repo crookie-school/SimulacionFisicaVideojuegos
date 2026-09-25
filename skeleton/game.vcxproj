@@ -264,6 +264,8 @@
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="P0_Scene.cpp" />
+    <ClCompile Include="P1_Scene.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Render.cpp" />
@@ -275,6 +277,8 @@
     <ClInclude Include="core.hpp" />
     <ClInclude Include="EmptyScene.h" />
     <ClInclude Include="P0_Scene.h" />
+    <ClInclude Include="P1_Scene.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Render.h" />

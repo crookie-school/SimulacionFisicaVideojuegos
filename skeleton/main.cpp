@@ -22,6 +22,7 @@
 // Para las escenas del curso, se incluyen los headers de las prácticas y la escena vacía
 #include "SceneManager.h"
 #include "P0_Scene.h"
+#include "P1_Scene.h"
 #include "EmptyScene.h"
 
 #include <foundation/PxSimpleTypes.h>
@@ -52,7 +53,7 @@ ContactReportCallback gContactReportCallback;
 
 // Global variables for physics timing. We use a fixed timestep for physics simulation, and accumulate time to determine when to step the physics simulation.
 double gPhysicsTimeAccumulator = 0.0;
-const double gFixedTimestep = 1.0 / 60.0;
+const double gFixedTimestep = 1.0f / 60.0f;
 
 
 void initPhysics(bool interactive)
@@ -100,6 +101,7 @@ void initPhysics(bool interactive)
 	// Registrar las prácticas/escenas del curso
 	SceneManager::instance().registerScene<EmptyScene>("EscenaVacia");
 	SceneManager::instance().registerScene<P0_Scene>("P0_Scene");
+	SceneManager::instance().registerScene<P1_Scene>("P1_Scene");
 	
 	// Cargar la escena inicial
 	SceneManager::instance().changeScene("EscenaVacia");
@@ -124,6 +126,7 @@ void stepPhysics(bool interactive, double t)
 	{
 		// simulate() arranca la simulación de forma asíncrona en el hilo de físicas
 		gScene->simulate(static_cast<PxReal>(gFixedTimestep));
+		SceneManager::instance().update(gFixedTimestep);
 
 		// fetchResults(true) bloquea el hilo de renderizado hasta que la física termine.
 		// En prácticas avanzadas es vital para que el renderizado no lea datos corruptos.
@@ -131,7 +134,6 @@ void stepPhysics(bool interactive, double t)
 
 		gPhysicsTimeAccumulator -= gFixedTimestep;
 	}
-	SceneManager::instance().update(t);
 }
 
 
