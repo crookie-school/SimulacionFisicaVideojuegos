@@ -5,21 +5,23 @@
 
 class RenderItem;
 
+constexpr float DAMPING = 0.99f;
+
 class Particle
 {
 public:
-	Particle(Vector3D Pos, Vector3D Acc, float Damping);
-	~Particle();
+	Particle(const Vector3D &Pos, const Vector3D &Acc, float mass);
+	virtual ~Particle();
 	
-	void integrateEuler(double t);
-	void integrateEulerSemi(double t);
-	void integrateVerlet(double t);
+	virtual void integrateEuler(double t);
+	virtual void integrateEulerSemi(double t);
+	virtual void integrateVerlet(double t);
 
-private:
+protected:
+	float mass;
 	Vector3D vel;
 	Vector3D acc;
 	physx::PxTransform pose;
-	float dampingFactor;
 	RenderItem* renderItem;
 
 	// Verlet integration
