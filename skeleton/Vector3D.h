@@ -69,11 +69,11 @@ public:
 
 		return *this;
 	}
-	Vector3D& operator+ (const Vector3D& other) const noexcept
+	Vector3D operator+ (const Vector3D& other) const noexcept
 	{
 		return Vector3D(_x + other._x, _y + other._y, _z + other._z);
 	}
-	Vector3D& operator- (const Vector3D& other) const noexcept
+	Vector3D operator- (const Vector3D& other) const noexcept
 	{
 		return Vector3D(_x - other._x, _y - other._y, _z - other._z);
 	}
@@ -81,9 +81,26 @@ public:
 	{
 		return dot(other);
 	}
-	Vector3D& operator* (float scalar) const noexcept
+	Vector3D operator* (float scalar) const noexcept
 	{
 		return Vector3D(_x * scalar, _y * scalar, _z * scalar);
+	}
+	Vector3D& operator+=(const Vector3D& o) noexcept { 
+		_x += o._x; _y += o._y; _z += o._z; 
+		return *this; 
+	}
+	Vector3D& operator-=(const Vector3D& o) noexcept { 
+		_x -= o._x; _y -= o._y; _z -= o._z; 
+		return *this; 
+	}
+	Vector3D& operator*=(float s) noexcept { 
+		_x *= s; _y *= s; _z *= s; 
+		return *	this; 
+	}
+	Vector3D& operator/=(float s) { 
+		assert(s != 0 && "Division by zero"); 
+		_x /= s; _y /= s; _z /= s; 
+		return *this; 
 	}
 
 	operator physx::PxVec3() const{
@@ -93,3 +110,8 @@ public:
 private:
 	float _x, _y, _z;
 };
+
+inline Vector3D operator*(float scalar, const Vector3D& v) noexcept
+{
+	return v * scalar;
+}
