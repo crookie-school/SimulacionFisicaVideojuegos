@@ -2,21 +2,23 @@
 #include <algorithm>
 #include <iostream>
 
-ParticleSystem::ParticleSystem()
+ParticleSystem::ParticleSystem(const Vector3D& acceleration)
+	: _acceleration(acceleration)
 {
 }
 
 void ParticleSystem::update(float dt)
 {
 
-	for (Particle& p : particles) {
+	for (Particle& p : _particles) {
+		p.setAcc(_acceleration);
 		p.integrateEulerSemi(dt);
 	}
 	
-	particles.erase(
-		std::remove_if(particles.begin(), particles.end(), [](const Particle& p)
+	_particles.erase(
+		std::remove_if(_particles.begin(), _particles.end(), [](const Particle& p)
 			{
 			return !p.isAlive();
 			}), 
-		particles.end());
+		_particles.end());
 }

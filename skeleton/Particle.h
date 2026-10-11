@@ -9,7 +9,7 @@ class Particle
 {
 public:
 	Particle();
-	Particle(const Vector3D &Pos, const Vector3D &Acc, float mass, float aliveTime);
+	Particle(const Vector3D& Pos, const Vector3D& Acc, float mass, float aliveTime, const Vector4& color = {1.f, 1.f, 1.f, 1.f});
 	Particle(const Particle& other);
 	Particle& operator=(const Particle& other);
 	virtual ~Particle();
@@ -33,6 +33,9 @@ public:
 	Vector3D getVel() const { return vel; }
 	Vector3D getAcc() const { return acc; }
 	Vector3D getPos() const { return pose.p; }
+
+	void setColor(const Vector4& col);
+	Vector4 getColor() const;
 
 protected:
 	float mass;

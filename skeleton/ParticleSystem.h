@@ -6,16 +6,17 @@
 class ParticleSystem
 {
 public:
-	ParticleSystem();
+	ParticleSystem(const Vector3D& acceleration);
 
 	void update(float dt);
 
 	template<typename ...Args>
 	void createParticle(Args&&... args) {
-		particles.emplace_back(std::forward<Args>(args)...);
+		_particles.emplace_back(std::forward<Args>(args)...);
 	}
 
 private:
-	std::vector<Particle> particles;
+	std::vector<Particle> _particles;
+	Vector3D _acceleration;
 };
 
