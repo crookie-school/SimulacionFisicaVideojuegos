@@ -18,28 +18,45 @@ public:
     void init() override {
         sys = new ParticleSystem();
 
-        Particle p1;
-        p1.setPos({ 0.f, 0.f, 0.f });
-        p1.setVel({ 0.f, 100.f, 0.f });
-        p1.setLifeTime(10.f);
-        Particle p2;
-        p2.setPos({ 0.f, 0.f, 0.f });
-        p2.setVel({ 10.f, 5.f, 10.f });
-        p2.setLifeTime(5.f);
-        p2.setMass(0.f);
-        p2.setDamping(0.f);
+
+        ParticleGenerationConfig config;
+        config.shape = GeneratorShape::Sphere;
+        config.meanPose = Vector3D{ 0.f, 0.f, 0.f };
+        config.desvPose = Vector3D{ 10.f, 10.f, 10.f };
+
+        config.velType = GeneratorVelType::Independent;
+        config.meanVel = Vector3D{ 0.f, 0.f, 0.f };
+        config.desvVel = Vector3D{ 0.f, 0.f, 0.f };
+        config.meanSpeed = 10.f;
+        config.desvSpeed = 0.f;
+
+        config.meanAliveTime = 2.f;
+        config.desvAliveTime = 1.f;
+
+        config.meanMass = 1.f;
+        config.desvMass = 0.f;
+
+        config.meanDamping = 0.99f;
+        config.desvDamping = 0.f;
         
 
-        gen = new ParticleGenerator<std::uniform_real_distribution<float>>(ParticleGenerationModel{ p1, p2 });
+        gen = new ParticleGenerator(1000.f, config);
     }
 
     void update(double dt) override {
         sys->update(dt);
+        gen->update(*sys, dt);
     }
 
     void keyPress(unsigned char key, const physx::PxTransform& camera) override {
-        if (key == 'g') {
-            gen->generate(*sys, 1);
+        switch (key)
+        {
+        case 'g': gen->generate(*sys, 500); break;
+        case 'i': gen->setPosition(gen->getPosition() + Vector3D(0.f,0.f,10.f)); break;
+        case 'k': gen->setPosition(gen->getPosition() + Vector3D(0.f,0.f,-10.f)); break;
+        case 'j': gen->setPosition(gen->getPosition() + Vector3D(10.f,0.f,0.f)); break;
+        case 'l': gen->setPosition(gen->getPosition() + Vector3D(-10.f,0.f,0.f)); break;
+        default:  break;
         }
     }
 
@@ -50,6 +67,6 @@ public:
 
 private:
     ParticleSystem* sys;
-    ParticleGenerator<std::uniform_real_distribution<float>>* gen;
+    ParticleGenerator* gen;
 };
 

@@ -1,5 +1,6 @@
 #include "ParticleSystem.h"
 #include <algorithm>
+#include <iostream>
 
 ParticleSystem::ParticleSystem()
 {
@@ -13,7 +14,8 @@ void ParticleSystem::update(float dt)
 	}
 	
 	particles.erase(
-		std::remove_if(particles.begin(), particles.end(), [](const Particle& p) {
+		std::remove_if(particles.begin(), particles.end(), [](const Particle& p)
+			{
 			return !p.isAlive();
 			}), 
 		particles.end());

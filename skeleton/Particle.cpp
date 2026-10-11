@@ -8,21 +8,18 @@ Particle::Particle()
 	:mass(1.f), pose({0.f, 0.f, 0.f}), acc({0.f, 0.f, 0.f}), lastPos(pose.p), aliveTime(0), damping(0.99f)
 {
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(0.5f), nullptr), &pose, Vector4(0.8f, 0.2f, 0.3f, 1.f));
-	renderItem->addReference();
 }
 
 Particle::Particle(const Vector3D &Pos, const Vector3D &Acc, float mass, float aliveTime)
 	: mass(mass), pose(Pos), vel(0, 0, 0), acc(Acc), lastPos(Pos), aliveTime(aliveTime), damping(0.99f)
 {
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(0.5f), nullptr), &pose, Vector4(0.8f, 0.2f, 0.3f, 1.f));
-	renderItem->addReference();
 }
 
 Particle::Particle(const Particle& other)
 	: mass(other.mass), pose(other.pose), vel(other.vel), acc(other.acc), lastPos(other.lastPos), aliveTime(other.aliveTime), damping(other.damping)
 {
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(0.5f), nullptr), &pose, Vector4(0.8f, 0.2f, 0.3f, 1.f));
-	renderItem->addReference();
 }
 
 Particle& Particle::operator=(const Particle& other)
@@ -36,8 +33,6 @@ Particle& Particle::operator=(const Particle& other)
 	lastPos = other.lastPos;
 	aliveTime = other.aliveTime;
 	damping = other.damping;
-	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(0.5f), nullptr), &pose, Vector4(0.8f, 0.2f, 0.3f, 1.f));
-	renderItem->addReference();
 
 	return *this;
 }
