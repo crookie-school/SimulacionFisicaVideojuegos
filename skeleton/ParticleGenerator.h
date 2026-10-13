@@ -17,6 +17,8 @@ struct ParticleGenerationConfig {
 	
 	float meanAliveTime = 2.f, desvAliveTime = 0.f;
 	float meanDamping = 0.99f, desvDamping = 0.f;
+
+	Vector4 meanColor = { 1.f, 1.f, 1.f, 1.f }, desvColor = { 0.f, 0.f, 0.f, 0.f };
 };
 
 class ParticleGenerator
@@ -51,6 +53,9 @@ public:
 	void setVelocity(const Vector3D& vel) { _config.meanVel = vel; }
 	Vector3D getVelocity() const { return _config.meanVel; }
 
+	void setColor(const Vector4& col) { _config.meanColor = col; }
+	Vector4 getColor() const { return _config.meanColor; }
+
 private:
 
 	Vector3D randVector(const Vector3D& mean, const Vector3D& desv)
@@ -59,6 +64,16 @@ private:
 			mean.getX() + _dist(_mt) * desv.getX(),
 			mean.getY() + _dist(_mt) * desv.getY(),
 			mean.getZ() + _dist(_mt) * desv.getZ()
+		};
+	}
+
+	Vector4 randVector(const Vector4& mean, const Vector4& desv)
+	{
+		return Vector4{
+			mean.x + _dist(_mt) * desv.x,
+			mean.y + _dist(_mt) * desv.y,
+			mean.z + _dist(_mt) * desv.z,
+			mean.w + _dist(_mt) * desv.w
 		};
 	}
 

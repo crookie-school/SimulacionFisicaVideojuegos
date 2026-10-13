@@ -30,7 +30,7 @@ public:
         config.meanSpeed = 10.f;
         config.desvSpeed = 0.f;
 
-        config.meanAliveTime = 2.f;
+        config.meanAliveTime = 0.2f;
         config.desvAliveTime = 0.f;
 
         config.meanMass = 1.f;
@@ -38,6 +38,9 @@ public:
 
         config.meanDamping = 0.99f;
         config.desvDamping = 0.f;
+
+        config.meanColor = { 0.8f, 0.2f, 0.3f, 1.f };
+        config.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
 
         gen = new ParticleGenerator(1000.f, config);
     }
@@ -66,10 +69,23 @@ public:
         case '+': gen->setEmissionRate(gen->getEmissionRate() + 100); std::cout << "Emission Rate: " << gen->getEmissionRate() << '\n'; break;
         case '-': gen->setEmissionRate(gen->getEmissionRate() - 100); std::cout << "Emission Rate: " << gen->getEmissionRate() << '\n'; break;
 
-        case 'r': gen->setVelType(GeneratorVelType::Radial); break;
-        case 't': gen->setVelType(GeneratorVelType::Independent); break;
-        case 'y': gen->setVelocity(Vector3D(0.f, 10.f, 0.f)); break;
-        case 'u': gen->setVelocity(Vector3D(0.f, 0.f, 0.f)); break;
+        case 'r': gen->setVelType(GeneratorVelType::Radial); std::cout << "Velocity type: Radial\n"; break;
+        case 't': gen->setVelType(GeneratorVelType::Independent); std::cout << "Velocity type: Independent\n"; break;
+        case 'y': gen->setVelocity(Vector3D(0.f, 10.f, 0.f)); std::cout << "Particle Velocity: 0.0, 10.0, 0.0\n"; break;
+        case 'u': gen->setVelocity(Vector3D(0.f, 0.f, 0.f)); std::cout << "Particle Velocity: 0.0, 0.0, 0.0\n"; break;
+
+        case 'z': sys->setAcceleration(Vector3D(0.f, 0.f, 0.f)); std::cout << "Particle Gravity: 0.0, 0.0, 0.0\n"; break;
+        case 'x': sys->setAcceleration(Vector3D(0.f, -10.f, 0.f)); std::cout << "Particle Gravity: 0.0, -10.0, 0.0\n"; break;
+
+        case 'h': std::cout << "Generator modifiable properties:\n"
+            "\t- g: Generate 500 particles\n"
+            "\t- i/j/k/l: Move Generator position\n"
+            "\t- e: toggle emission\n"
+            "\t- c/v/b: Change generator shape (Point / Sphere / Box)\n"
+            "\t- +/-: Increment/Decrement emission rate by 100\n"
+            "\t- r/t: Change velocity type (Radial / Independent)\n"
+            "\t- y/u: Change independent particle velocity (y is upwards, u is none)\n"
+            "\t- z/x: Deactivate/Activate gravity\n";
         default:  break;
         }
     }

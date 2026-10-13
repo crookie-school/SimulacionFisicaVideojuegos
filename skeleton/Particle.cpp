@@ -33,6 +33,7 @@ Particle& Particle::operator=(const Particle& other)
 	lastPos = other.lastPos;
 	aliveTime = other.aliveTime;
 	damping = other.damping;
+	(*renderItem) = (*other.renderItem);
 
 	return *this;
 }

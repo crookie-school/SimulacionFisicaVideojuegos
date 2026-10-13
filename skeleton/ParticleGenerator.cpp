@@ -66,6 +66,8 @@ void ParticleGenerator::generate(ParticleSystem& particleSys, int amount)
 		particle.setDamping(_config.meanDamping + _dist(_mt) * _config.desvDamping);
 		particle.setLifeTime(_config.meanAliveTime + _dist(_mt) * _config.desvAliveTime);
 
+		particle.setColor(randVector(_config.meanColor, _config.desvColor));
+
 		particleSys.createParticle(particle);
 	}
 }
