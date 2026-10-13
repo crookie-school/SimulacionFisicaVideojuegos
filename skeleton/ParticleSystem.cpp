@@ -13,11 +13,18 @@ ParticleSystem::~ParticleSystem()
 		delete p;
 	}
 	_particles.clear();
+	for (Particle* p : _queueToAdd) {
+		delete p;
+	}
+	_queueToAdd.clear();
 }
 
 void ParticleSystem::update(float dt)
 {
-
+	// Pasamos las particulas en espera a la lista de particulas al principio de los frames
+	_particles.insert(_particles.end(), _queueToAdd.begin(), _queueToAdd.end());
+	_queueToAdd.clear();
+	
 	for (Particle* p : _particles) {
 		p->setAcc(_acceleration);
 		p->integrateEulerSemi(dt);
@@ -27,6 +34,7 @@ void ParticleSystem::update(float dt)
 		std::remove_if(_particles.begin(), _particles.end(), [](Particle* p)
 			{
 				if (!p->isAlive()) {
+					p->die();
 					delete p;
 					return true;
 				}

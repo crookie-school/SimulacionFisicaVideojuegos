@@ -2,8 +2,10 @@
 
 #include "core.hpp"
 #include "Vector3D.h"
+#include <functional>
 
 class RenderItem;
+class ParticleGenerator;
 
 class Particle
 {
@@ -37,6 +39,11 @@ public:
 	void setColor(const Vector4& col);
 	Vector4 getColor() const;
 
+	void setOnDeathCallback(std::function<void(Particle*)> callback);
+	void die() { 
+		if(onDeath) onDeath(this); 
+	}
+
 protected:
 	float mass;
 	Vector3D vel;
@@ -48,5 +55,6 @@ protected:
 	Vector3D lastPos;
 	float aliveTime;
 	float damping;
+	std::function<void(Particle*)> onDeath;
 };
 

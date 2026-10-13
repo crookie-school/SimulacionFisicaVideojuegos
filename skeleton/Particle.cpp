@@ -1,6 +1,7 @@
 #include "Particle.h"
 
 #include "RenderUtils.hpp"
+#include "Render/Render.h"
 
 #include <cmath>
 
@@ -17,7 +18,7 @@ Particle::Particle(const Vector3D &Pos, const Vector3D &Acc, float mass, float a
 }
 
 Particle::Particle(const Particle& other)
-	: mass(other.mass), pose(other.pose), vel(other.vel), acc(other.acc), lastPos(other.lastPos), aliveTime(other.aliveTime), damping(other.damping)
+	: mass(other.mass), pose(other.pose), vel(other.vel), acc(other.acc), lastPos(other.lastPos), aliveTime(other.aliveTime), damping(other.damping), onDeath(other.onDeath)
 {
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1.f), nullptr), &pose, other.renderItem->color);
 }
@@ -33,8 +34,9 @@ Particle& Particle::operator=(const Particle& other)
 	lastPos = other.lastPos;
 	aliveTime = other.aliveTime;
 	damping = other.damping;
+	onDeath = other.onDeath;
 	(*renderItem) = (*other.renderItem);
-
+	
 	return *this;
 }
  
@@ -87,3 +89,8 @@ void Particle::integrateVerlet(double t)
 void Particle::setColor(const Vector4& col) { renderItem->color = col; }
 
 Vector4 Particle::getColor() const { return renderItem->color; }
+
+void Particle::setOnDeathCallback(std::function<void(Particle*)> callback)
+{
+	onDeath = callback;
+}

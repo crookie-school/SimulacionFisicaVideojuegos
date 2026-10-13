@@ -68,6 +68,8 @@ void ParticleGenerator::generate(ParticleSystem& particleSys, int amount)
 
 		particle.setColor(randVector(_config.meanColor, _config.desvColor));
 
+		particle.setOnDeathCallback(_config.onDeathCallback);
+
 		particleSys.createParticle(particle);
 	}
 }

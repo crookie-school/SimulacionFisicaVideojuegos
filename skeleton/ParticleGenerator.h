@@ -19,13 +19,15 @@ struct ParticleGenerationConfig {
 	float meanDamping = 0.99f, desvDamping = 0.f;
 
 	Vector4 meanColor = { 1.f, 1.f, 1.f, 1.f }, desvColor = { 0.f, 0.f, 0.f, 0.f };
+
+	std::function<void(Particle*)> onDeathCallback = std::function<void(Particle*)>(nullptr);
 };
 
 class ParticleGenerator
 {
 public:
 	ParticleGenerator(int emissionRate, const ParticleGenerationConfig& model, std::function<float(std::mt19937&)> dist = std::uniform_real_distribution<float>(-1, 1))
-		: _emissionRate(emissionRate), _acc(0), _mt(), _config(model), _dist(dist), _isEmitting(true)
+		: _emissionRate(emissionRate), _acc(0), _mt(std::random_device{}()), _config(model), _dist(dist), _isEmitting(true)
 	{
 	}
 

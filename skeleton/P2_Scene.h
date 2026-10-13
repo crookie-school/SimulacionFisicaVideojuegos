@@ -16,7 +16,7 @@ public:
     }
 
     void init() override {
-        sys = new ParticleSystem(Vector3D(0.f, -20.f, 0.f));
+        sys = new ParticleSystem(Vector3D(0.f, 0.f, 0.f));
 
 
         ParticleGenerationConfig config;
@@ -24,13 +24,13 @@ public:
         config.meanPose = Vector3D{ 0.f, 0.f, 0.f };
         config.desvPose = Vector3D{ 10.f, 10.f, 10.f };
 
-        config.velType = GeneratorVelType::Independent;
+        config.velType = GeneratorVelType::Radial;
         config.meanVel = Vector3D{ 0.f, 0.f, 0.f };
         config.desvVel = Vector3D{ 0.f, 0.f, 0.f };
         config.meanSpeed = 10.f;
         config.desvSpeed = 0.f;
 
-        config.meanAliveTime = 0.2f;
+        config.meanAliveTime = 2.f;
         config.desvAliveTime = 0.f;
 
         config.meanMass = 1.f;
@@ -42,7 +42,29 @@ public:
         config.meanColor = { 0.8f, 0.2f, 0.3f, 1.f };
         config.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
 
-        gen = new ParticleGenerator(1000.f, config);
+        // Parte opcional - Cuando mueren las particulas originales, salen 3 azules con velocidad radial desde la posicion donde murio la anterior
+        ParticleGenerationConfig childConfig;
+        childConfig.shape = GeneratorShape::Sphere;
+        childConfig.desvPose = Vector3D(1.f, 1.f, 1.f);
+
+        childConfig.velType = GeneratorVelType::Radial;
+        childConfig.meanSpeed = 5.f;
+        childConfig.desvSpeed = 2.f;
+
+        childConfig.meanAliveTime = 10.f;
+
+        childConfig.meanColor = { 0.2f, 0.2f, 0.8f, 1.f };
+        childConfig.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
+
+        childGen = new ParticleGenerator(0.f, childConfig);
+        config.onDeathCallback = [this](Particle* p)
+            {
+                childGen->setPosition(p->getPos());
+                childGen->generate(*sys, 2);
+            };
+
+        gen = new ParticleGenerator(5.f, config);
+        gen->setEmitting(false);
     }
 
     void update(double dt) override {
@@ -93,10 +115,12 @@ public:
     void cleanup() override {
         delete sys;
         delete gen;
+        delete childGen;
     }
 
 private:
     ParticleSystem* sys;
     ParticleGenerator* gen;
+    ParticleGenerator* childGen;
 };
 
