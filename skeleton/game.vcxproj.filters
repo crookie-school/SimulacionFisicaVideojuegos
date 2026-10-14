@@ -12,13 +12,10 @@
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="P0_Scene.cpp" />
     <ClCompile Include="Particle.cpp" />
-    <ClCompile Include="P1_Scene.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
-    <ClCompile Include="P2_Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -41,6 +38,8 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="P2_Scene.h" />
+    <ClInclude Include="P3_Scene.h" />
+    <ClInclude Include="ForceGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

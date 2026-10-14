@@ -11,7 +11,7 @@ class Particle
 {
 public:
 	Particle();
-	Particle(const Vector3D& Pos, const Vector3D& Acc, float mass, float aliveTime, const Vector4& color = {1.f, 1.f, 1.f, 1.f});
+	Particle(const Vector3D& Pos, float mass, float aliveTime, const Vector4& color = {1.f, 1.f, 1.f, 1.f});
 	Particle(const Particle& other);
 	Particle& operator=(const Particle& other);
 	virtual ~Particle();
@@ -25,13 +25,13 @@ public:
 	void setLifeTime(float time) { aliveTime = time; }
 
 	void setDamping(float d) { damping = d; }
-	void setMass(float m) { mass = m; }
+	void setMass(float m) { inverseMass = 1.f/m; }
 	void setVel(const Vector3D &v) { vel = v; }
 	void setAcc(const Vector3D &a) { acc = a; }
 	void setPos(const Vector3D &p) { pose = physx::PxTransform(p); }
 
 	float getDamping() const { return damping; }
-	float getMass() const { return mass; }
+	float getMass() const { return 1.f/inverseMass; }
 	Vector3D getVel() const { return vel; }
 	Vector3D getAcc() const { return acc; }
 	Vector3D getPos() const { return pose.p; }
@@ -44,12 +44,16 @@ public:
 		if(onDeath) onDeath(this); 
 	}
 
+	void addForce(const Vector3& force) { forceAcc += force; }
+	void clearForces() { forceAcc = { 0.f, 0.f, 0.f }; }
+
 protected:
-	float mass;
+	float inverseMass;
 	Vector3D vel;
 	Vector3D acc;
 	physx::PxTransform pose;
 	RenderItem* renderItem;
+	Vector3 forceAcc;
 
 	// Verlet integration
 	Vector3D lastPos;

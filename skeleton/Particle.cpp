@@ -6,19 +6,19 @@
 #include <cmath>
 
 Particle::Particle()
-	:mass(1.f), pose({0.f, 0.f, 0.f}), acc({0.f, 0.f, 0.f}), lastPos(pose.p), aliveTime(0), damping(0.99f)
+	:inverseMass(1.f), pose(0.f, 0.f, 0.f), acc(0.f, 0.f, 0.f), forceAcc(0.f, 0.f, 0.f), lastPos(pose.p), aliveTime(0), damping(0.99f)
 {
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1.f), nullptr), &pose, Vector4(1.f, 1.f, 1.f, 1.f));
 }
 
-Particle::Particle(const Vector3D &Pos, const Vector3D &Acc, float mass, float aliveTime, const Vector4& color)
-	: mass(mass), pose(Pos), vel(0, 0, 0), acc(Acc), lastPos(Pos), aliveTime(aliveTime), damping(0.99f)
+Particle::Particle(const Vector3D &Pos, float mass, float aliveTime, const Vector4& color)
+	: inverseMass(1.f/mass), pose(Pos), vel(0, 0, 0), acc(0, 0, 0), forceAcc(0.f, 0.f, 0.f), lastPos(Pos), aliveTime(aliveTime), damping(0.99f)
 {
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1.f), nullptr), &pose, color);
 }
 
 Particle::Particle(const Particle& other)
-	: mass(other.mass), pose(other.pose), vel(other.vel), acc(other.acc), lastPos(other.lastPos), aliveTime(other.aliveTime), damping(other.damping), onDeath(other.onDeath)
+	: inverseMass(other.inverseMass), pose(other.pose), vel(other.vel), acc(other.acc), forceAcc(other.forceAcc), lastPos(other.lastPos), aliveTime(other.aliveTime), damping(other.damping), onDeath(other.onDeath)
 {
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1.f), nullptr), &pose, other.renderItem->color);
 }
@@ -27,7 +27,7 @@ Particle& Particle::operator=(const Particle& other)
 {
 	if (this == &other) return *this;
 
-	mass = other.mass;
+	inverseMass = other.inverseMass;
 	pose = other.pose;
 	vel = other.vel;
 	acc = other.acc;
@@ -35,6 +35,7 @@ Particle& Particle::operator=(const Particle& other)
 	aliveTime = other.aliveTime;
 	damping = other.damping;
 	onDeath = other.onDeath;
+	forceAcc = other.forceAcc;
 	(*renderItem) = (*other.renderItem);
 	
 	return *this;
@@ -52,11 +53,13 @@ void Particle::integrateEuler(double t)
 
 	pose.p = pose.p + vel * t;
 
-	vel = vel + acc * t;
+	const Vector3 finalAcc = acc + forceAcc * inverseMass;
+
+	vel = vel + finalAcc * t;
 
 	vel = vel * std::pow(damping, t); // Esto es para que el damping dependa también del delta. Usamos pow porque hay que contrarestarlo de forma exponencial.
 
-	acc = Vector3D(0, 0, 0);
+	clearForces();
 }
 
 void Particle::integrateEulerSemi(double t)
@@ -64,13 +67,15 @@ void Particle::integrateEulerSemi(double t)
 	// Euler semi-implicito
 	aliveTime -= t;
 
-	vel = vel + acc * t;
+	const Vector3 finalAcc = acc + forceAcc * inverseMass;
+
+	vel = vel + finalAcc * t;
 
 	vel = vel * std::pow(damping, t); // Esto es para que el damping dependa también del delta. Usamos pow porque hay que contrarestarlo de forma exponencial.
 
 	pose.p = pose.p + vel * t;
 
-	acc = Vector3D(0, 0, 0);
+	clearForces();
 }
 
 void Particle::integrateVerlet(double t)
@@ -81,9 +86,11 @@ void Particle::integrateVerlet(double t)
 
 	lastPos = pose.p;
 
-	pose.p = posDelta + acc * t * t;
+	const Vector3 finalAcc = acc + forceAcc * inverseMass;
 
-	acc = Vector3D(0, 0, 0);
+	pose.p = posDelta + finalAcc * t * t;
+
+	clearForces();
 }
 
 void Particle::setColor(const Vector4& col) { renderItem->color = col; }
