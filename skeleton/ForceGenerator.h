@@ -2,11 +2,17 @@
 
 #include "Vector3D.h"
 #include "Particle.h"
+#include "ParticleSystem.h"
 
 class ForceGenerator
 {
 public:
 	virtual void updateForce(Particle* particle, float duration) = 0;
+	virtual void updateForce(ParticleSystem& sys, float duration) {
+		for (auto it = sys.begin(); it != sys.end(); ++it) {
+			updateForce(*it, duration);
+		}
+	}
 };
 
 class GravityForceGenerator : public ForceGenerator

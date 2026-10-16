@@ -20,6 +20,9 @@ public:
 		_queueToAdd.emplace_back(new Particle(std::forward<Args>(args)...));
 	}
 
+	std::vector<Particle*>::iterator begin() { return _particles.begin(); }
+	std::vector<Particle*>::iterator end() { return _particles.end(); }
+
 private:
 	std::vector<Particle*> _queueToAdd;
 	std::vector<Particle*> _particles;
