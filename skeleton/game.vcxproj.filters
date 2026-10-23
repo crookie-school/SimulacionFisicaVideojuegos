@@ -16,6 +16,7 @@
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
+    <ClCompile Include="ForceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
