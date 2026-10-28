@@ -2,6 +2,7 @@
 
 #include "core.hpp"
 #include "Vector3D.h"
+#include "RenderUtils.hpp"
 #include <functional>
 
 class RenderItem;
@@ -11,7 +12,7 @@ class Particle
 {
 public:
 	Particle();
-	Particle(const Vector3D& Pos, float mass, float aliveTime, const Vector4& color = {1.f, 1.f, 1.f, 1.f});
+	Particle(const Vector3D& Pos, float mass, float aliveTime, const Vector4& color = {1.f, 1.f, 1.f, 1.f}, physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(1.f), nullptr));
 	Particle(const Particle& other);
 	Particle& operator=(const Particle& other);
 	virtual ~Particle();

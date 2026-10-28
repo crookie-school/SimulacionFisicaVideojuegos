@@ -1,6 +1,6 @@
 #include "Particle.h"
 
-#include "RenderUtils.hpp"
+
 #include "Render/Render.h"
 
 #include <cmath>
@@ -11,10 +11,10 @@ Particle::Particle()
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1.f), nullptr), &pose, Vector4(1.f, 1.f, 1.f, 1.f));
 }
 
-Particle::Particle(const Vector3D &Pos, float mass, float aliveTime, const Vector4& color)
+Particle::Particle(const Vector3D &Pos, float mass, float aliveTime, const Vector4& color, physx::PxShape* shape)
 	: inverseMass(1.f/mass), pose(Pos), vel(0, 0, 0), acc(0, 0, 0), forceAcc(0.f, 0.f, 0.f), lastPos(Pos), aliveTime(aliveTime), damping(0.99f)
 {
-	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1.f), nullptr), &pose, color);
+	renderItem = new RenderItem(shape, &pose, color);
 }
 
 Particle::Particle(const Particle& other)

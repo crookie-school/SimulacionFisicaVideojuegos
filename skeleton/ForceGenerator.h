@@ -4,6 +4,7 @@
 #include "Particle.h"
 #include "ParticleSystem.h"
 #include <limits>
+#include <algorithm>
 
 class ForceGenerator
 {
@@ -154,4 +155,83 @@ private:
 	Vector3D position;
 	float explosionStr;
 	float explosionRad;
+};
+
+
+class SpringForceGenerator : public ForceGenerator
+{
+public:
+	SpringForceGenerator(double k, double restingLength, Particle* other)
+		: k(k), restingLength(restingLength), other(other)
+	{
+
+	}
+
+	virtual void updateForce(Particle* p, float d) override
+	{
+		Vector3D relativePosVector = other->getPos() - p->getPos();
+		Vector3D force;
+
+		const float length = relativePosVector.magnitude(); relativePosVector.normalize();
+		const float delta_x = length - restingLength;
+
+		force = relativePosVector * delta_x * k;
+		
+		p->addForce(force);
+	}
+
+	inline void setK(double newk) { k = newk; }
+	inline double getK() const { return k; }
+
+protected:
+	double k;
+	double restingLength;
+	Particle* other;
+};
+
+
+class AnchoredSpringFG : public SpringForceGenerator
+{
+public:
+	AnchoredSpringFG(double k, double restingLength, const Vector3& anchorPos) :
+		SpringForceGenerator(k, restingLength, new Particle(anchorPos, 1.f, 999999999.f, {0.f, 0.f, 0.f, 1.f}))
+	{
+	}
+
+	~AnchoredSpringFG()
+	{
+		delete other;
+	}
+};
+
+
+class BouyancyForceGenerator : public ForceGenerator
+{
+public:
+	BouyancyForceGenerator(float h, float V, float d)
+		: height(h), volume(V), liquidDensity(d), liquidParticle(new Particle({0.f, h, 0.f}, 1.f, 9999999.f, {0.2f, 0.3f, 0.8f, 1.f}, CreateShape(physx::PxBoxGeometry(10.f, 1.f, 10.f))))
+	{}
+
+	~BouyancyForceGenerator(){
+		delete liquidParticle;
+	}
+
+	virtual void updateForce(Particle* p, float d) override
+	{
+		float h = p->getPos().getY();
+		float h0 = liquidParticle->getPos().getY();
+
+		float immersed = fmin(fmax(h0 - h / height + 0.5f, 0.f), 1.f);
+		Vector3D f(0, liquidDensity * volume * immersed * gravity, 0);
+		
+		p->addForce(f);
+	}
+
+private:
+	float height;
+	float volume;
+	float liquidDensity;
+	float gravity = 9.8;
+
+	Particle* liquidParticle;
 };
