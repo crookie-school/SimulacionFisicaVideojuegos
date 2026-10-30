@@ -18,7 +18,7 @@ public:
 
     void init() override
     {
-        sys = new ParticleSystem(Vector3D(0.f, 0.f, 0.f));
+        sys = new ParticleSystem();
 
         // Configuraci'on del generador que usamos para crear particulas en el AOE
         ParticleGenerationConfig config;
@@ -57,8 +57,8 @@ public:
 
         // Creamos los generadores
         gravityFG = new GravityForceGenerator({0.f, -10.f, 0.f});
-        windFG = new WindForceGenerator({ 100.f, 0.f, 0.f }, AOEorigin.p - AOEsize / 2.f, AOEsize);
-        tornadoFG = new TornadoForceGenerator(10.f, 2.f, AOEorigin.p - AOEsize / 2.f, AOEsize);
+        windFG = new WindForceGenerator(0.4f, { 100.f, 0.f, 0.f }, AOEorigin.p - AOEsize / 2.f, AOEsize);
+        tornadoFG = new TornadoForceGenerator(10.f, 2.f, 0.4f, AOEorigin.p - AOEsize / 2.f, AOEsize);
         explosionFG = new ExplosionForceGenerator(AOEorigin.p, 100000.f, AOEsize.magnitudeSquared(), 0.05f);
     }
 

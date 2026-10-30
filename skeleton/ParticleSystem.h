@@ -6,12 +6,8 @@
 class ParticleSystem
 {
 public:
-	ParticleSystem(const Vector3D& acceleration);
+	ParticleSystem();
 	~ParticleSystem();
-
-	void setAcceleration(const Vector3D& acc) {
-		_acceleration = acc;
-	}
 
 	void update(float dt);
 
@@ -26,6 +22,5 @@ public:
 private:
 	std::vector<Particle*> _queueToAdd;
 	std::vector<Particle*> _particles;
-	Vector3D _acceleration;
 };
 

@@ -5,18 +5,19 @@
 #include <iostream>
 #include "ParticleSystem.h"
 #include "ParticleGenerator.h"
+#include "ForceGenerator.h"
 #include <random>
 
 class P2_Scene :
     public Scene
 {
 public:
-    explicit P2_Scene(std::string name) : Scene(std::move(name)), sys()
+    explicit P2_Scene(std::string name) : Scene(std::move(name)), sys(), gravityFG({0.f, -10.f, 0.f})
     {
     }
 
     void init() override {
-        sys = new ParticleSystem(Vector3D(0.f, 0.f, 0.f));
+        sys = new ParticleSystem();
 
 
         ParticleGenerationConfig config;
@@ -68,6 +69,7 @@ public:
     }
 
     void update(double dt) override {
+        if (enableGravity) gravityFG.updateForce(*sys, dt);
         sys->update(dt);
         gen->update(*sys, dt);
     }
@@ -96,8 +98,7 @@ public:
         case 'y': gen->setVelocity(Vector3D(0.f, 10.f, 0.f)); std::cout << "Particle Velocity: 0.0, 10.0, 0.0\n"; break;
         case 'u': gen->setVelocity(Vector3D(0.f, 0.f, 0.f)); std::cout << "Particle Velocity: 0.0, 0.0, 0.0\n"; break;
 
-        case 'z': sys->setAcceleration(Vector3D(0.f, 0.f, 0.f)); std::cout << "Particle Gravity: 0.0, 0.0, 0.0\n"; break;
-        case 'x': sys->setAcceleration(Vector3D(0.f, -10.f, 0.f)); std::cout << "Particle Gravity: 0.0, -10.0, 0.0\n"; break;
+        case 'z': enableGravity = !enableGravity; std::cout << "Gravity: " << (enableGravity ? "Activated" : "Deactivated") << '\n'; break;
 
         case 'h': std::cout << "Generator modifiable properties:\n"
             "\t- g: Generate 500 particles\n"
@@ -107,7 +108,7 @@ public:
             "\t- +/-: Increment/Decrement emission rate by 100\n"
             "\t- r/t: Change velocity type (Radial / Independent)\n"
             "\t- y/u: Change independent particle velocity (y is upwards, u is none)\n"
-            "\t- z/x: Deactivate/Activate gravity\n";
+            "\t- z/x: Deactivate/Activate gravity\n"; break;
         default:  break;
         }
     }
@@ -122,5 +123,8 @@ private:
     ParticleSystem* sys;
     ParticleGenerator* gen;
     ParticleGenerator* childGen;
+
+    bool enableGravity = false;
+    GravityForceGenerator gravityFG;
 };
 

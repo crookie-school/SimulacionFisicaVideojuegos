@@ -40,7 +40,7 @@ class WindForceGenerator : public ForceGenerator
 public:
 	using ForceGenerator::updateForce;
 
-	WindForceGenerator(const Vector3D& windVel, const Vector3D& effectVolPosition, const Vector3D& effectVolume) : wV(windVel), effectVolPos(effectVolPosition), effectVol(effectVolume){}
+	WindForceGenerator(float k, const Vector3D& windVel, const Vector3D& effectVolPosition, const Vector3D& effectVolume) : k1(k), wV(windVel), effectVolPos(effectVolPosition), effectVol(effectVolume){}
 
 	
 	virtual void updateForce(Particle* particle, float duration) override
@@ -48,7 +48,7 @@ public:
 		// Si la particula esta dentro del volumen de efecto
 		if (isInArea(particle->getPos()))
 		{
-			particle->addForce((particle->getVel() - wV));
+			particle->addForce(k1 * (wV - particle->getVel()));
 		}
 
 	}
@@ -62,6 +62,7 @@ protected:
 			pos.getZ() > effectVolPos.getZ() && pos.getZ() < effectVolPos.getZ() + effectVol.getZ();
 	}
 
+	float k1;
 	Vector3D wV;
 	Vector3D effectVolPos; // Posicion de la esquina del volumen
 	Vector3D effectVol; // Posicion del tamano del volumen
@@ -72,8 +73,8 @@ class TornadoForceGenerator : public WindForceGenerator
 public:
 	using ForceGenerator::updateForce;
 
-	TornadoForceGenerator(float tornadoStrength, float centerPull, const Vector3D& effectVolPosition, const Vector3D& effectVolume) :
-		WindForceGenerator({0.f, 0.f, 0.f}, effectVolPosition, effectVolume), tornadoStrength(tornadoStrength), centerPull(centerPull) { }
+	TornadoForceGenerator(float tornadoStrength, float centerPull, float k, const Vector3D& effectVolPosition, const Vector3D& effectVolume) :
+		WindForceGenerator(k, {0.f, 0.f, 0.f}, effectVolPosition, effectVolume), tornadoStrength(tornadoStrength), centerPull(centerPull) { }
 
 	virtual void updateForce(Particle* particle, float duration) override
 	{

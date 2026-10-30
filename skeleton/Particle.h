@@ -26,7 +26,7 @@ public:
 	void setLifeTime(float time) { aliveTime = time; }
 
 	void setDamping(float d) { damping = d; }
-	void setMass(float m) { inverseMass = 1.f/m; }
+	void setMass(float m) { m = fmax(0.1f, m); inverseMass = 1.f / m; }
 	void setVel(const Vector3D &v) { vel = v; }
 	void setAcc(const Vector3D &a) { acc = a; }
 	void setPos(const Vector3D &p) { pose = physx::PxTransform(p); }

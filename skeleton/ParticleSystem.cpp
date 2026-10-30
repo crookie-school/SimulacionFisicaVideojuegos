@@ -2,8 +2,7 @@
 #include <algorithm>
 #include <iostream>
 
-ParticleSystem::ParticleSystem(const Vector3D& acceleration)
-	: _acceleration(acceleration)
+ParticleSystem::ParticleSystem()
 {
 }
 
@@ -26,7 +25,6 @@ void ParticleSystem::update(float dt)
 	_queueToAdd.clear();
 	
 	for (Particle* p : _particles) {
-		p->setAcc(_acceleration);
 		p->integrateEulerSemi(dt);
 	}
 	

@@ -18,4 +18,5 @@ void Projectile::integrateEulerSemi(double t)
 	acc = acc + Vector3D(0.f, simGravity, 0.f);
 
     Particle::integrateEulerSemi(t);
+    acc = Vector3D( 0, 0, 0 );
 }

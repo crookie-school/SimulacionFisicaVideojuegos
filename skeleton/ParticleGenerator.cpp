@@ -18,9 +18,9 @@ Vector3D ParticleGenerator::samplePoint()
 	{
 	case GeneratorShape::Point: return _config.meanPose;
 	case GeneratorShape::Box: return Vector3D{
-		_config.meanPose.getX() + _uniform_dist(_mt) * _config.desvPose.getX(),
-		_config.meanPose.getY() + _uniform_dist(_mt) * _config.desvPose.getY(),
-		_config.meanPose.getZ() + _uniform_dist(_mt) * _config.desvPose.getZ()
+		_config.meanPose.getX() + _dist(_mt) * _config.desvPose.getX(),
+		_config.meanPose.getY() + _dist(_mt) * _config.desvPose.getY(),
+		_config.meanPose.getZ() + _dist(_mt) * _config.desvPose.getZ()
 	};
 	case GeneratorShape::Sphere: {
 		Vector3D origen = _config.meanPose;
