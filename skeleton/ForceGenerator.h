@@ -22,6 +22,8 @@ public:
 class GravityForceGenerator : public ForceGenerator
 {
 public:
+	using ForceGenerator::updateForce;
+
 	GravityForceGenerator(const Vector3D& gravity) : g(gravity){}
 
 	virtual void updateForce(Particle* particle, float duration) override
@@ -36,6 +38,8 @@ private:
 class WindForceGenerator : public ForceGenerator
 {
 public:
+	using ForceGenerator::updateForce;
+
 	WindForceGenerator(const Vector3D& windVel, const Vector3D& effectVolPosition, const Vector3D& effectVolume) : wV(windVel), effectVolPos(effectVolPosition), effectVol(effectVolume){}
 
 	
@@ -66,8 +70,10 @@ protected:
 class TornadoForceGenerator : public WindForceGenerator
 {
 public:
-	TornadoForceGenerator(float tornadoStrength, float upwardStrength, const Vector3D& effectVolPosition, const Vector3D& effectVolume) :
-		WindForceGenerator({0.f, 0.f, 0.f}, effectVolPosition, effectVolume), tornadoStrength(tornadoStrength), upwardStrength(upwardStrength) { }
+	using ForceGenerator::updateForce;
+
+	TornadoForceGenerator(float tornadoStrength, float centerPull, const Vector3D& effectVolPosition, const Vector3D& effectVolume) :
+		WindForceGenerator({0.f, 0.f, 0.f}, effectVolPosition, effectVolume), tornadoStrength(tornadoStrength), centerPull(centerPull) { }
 
 	virtual void updateForce(Particle* particle, float duration) override
 	{
@@ -78,7 +84,7 @@ public:
 			const Vector3D center = effectVolPos + effectVol * 0.5f;
 			const Vector3D tornadoForce = {
 				-(pos.getZ() - center.getZ()),
-				upwardStrength - (pos.getY() - center.getY()),
+				centerPull - (pos.getY() - center.getY()),
 				pos.getX() - center.getX()
 			};
 			particle->addForce(tornadoStrength * tornadoForce);
@@ -87,7 +93,7 @@ public:
 
 private:
 	float tornadoStrength;
-	float upwardStrength;
+	float centerPull;
 };
 
 
@@ -103,44 +109,23 @@ public:
 		explosionRad(explosionRadius) 
 	{}
 
-	virtual void updateForce(Particle* particle, float duration) override
+	void applyTo(Particle* p)
 	{
-		if (!isExploding) return;
-
-		explosionTime += duration;
-		if (explosionTime > totalExplosionDuration) isExploding = false;
-
-		const Vector3D posToParticle = particle->getPos() - position;
-		const float r = posToParticle.magnitude();
-		
-		if (r > explosionRad) return;
-
-
-		const float timeEffect = std::exp(- explosionTime / totalExplosionDuration);
-		const Vector3D force = (explosionStr / (r * r)) * posToParticle * timeEffect;
-
-		particle->addForce(force);
+		Vector3D d = p->getPos() - position;
+		const float r = d.magnitude();
+		if (r > explosionRad || r < 1e-4f) return;
+		const float timeEffect = std::exp(-explosionTime / totalExplosionDuration);
+		p->addForce(d.normalized() * (explosionStr / (r * r)) * timeEffect);
 	}
 
-	virtual void updateForce(ParticleSystem& s, float d) override {
+	void updateForce(Particle* p, float) override { if (isExploding) applyTo(p); }
+
+	void updateForce(ParticleSystem& s, float dt) override
+	{
 		if (!isExploding) return;
-		explosionTime += d;
+		for (auto it = s.begin(); it != s.end(); ++it) applyTo(*it);
+		explosionTime += dt;
 		if (explosionTime > totalExplosionDuration) isExploding = false;
-
-		for (auto it = s.begin(); it != s.end(); ++it) {
-			Particle* particle = *it;
-			Vector3D posToParticle = particle->getPos() - position;
-			const float r = posToParticle.magnitude();
-			
-			if (r > explosionRad) continue;
-
-			const float timeEffect = std::exp(-explosionTime / totalExplosionDuration);
-
-			const Vector3D force = (explosionStr / (r*r)) * posToParticle.normalized() * timeEffect;
-
-			particle->addForce(force);
-		}
-		
 	}
 
 	void beginExplosion() {
@@ -161,6 +146,8 @@ private:
 class SpringForceGenerator : public ForceGenerator
 {
 public:
+	using ForceGenerator::updateForce;
+
 	SpringForceGenerator(double k, double restingLength, Particle* other)
 		: k(k), restingLength(restingLength), other(other)
 	{
@@ -208,6 +195,8 @@ public:
 class BouyancyForceGenerator : public ForceGenerator
 {
 public:
+	using ForceGenerator::updateForce;
+
 	BouyancyForceGenerator(float h, float V, float d)
 		: height(h), volume(V), liquidDensity(d), liquidParticle(new Particle({0.f, h, 0.f}, 1.f, 9999999.f, {0.2f, 0.3f, 0.8f, 1.f}, CreateShape(physx::PxBoxGeometry(10.f, 1.f, 10.f))))
 	{}

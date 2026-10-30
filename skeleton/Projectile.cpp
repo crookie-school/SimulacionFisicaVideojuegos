@@ -2,14 +2,14 @@
 #include <iostream>
 
 void Projectile::updateSimulatedMassAndGravity(float rV, float sV) {
-    inverseMass = (realMass * rV * rV) / (sV * sV);
+    simMass = (rV * rV) / (inverseMass * sV * sV);
     simGravity = GRAVITY * ((sV * sV) / (rV * rV));
 
 
     std::cout << "Real Vel: " << rV << " | ";
     std::cout << "Sim Vel: " << sV << '\n';
-    std::cout << "Real Mass: " << inverseMass << "  |  ";
-    std::cout << "Sim Mass :" << realMass << '\n';
+    std::cout << "Real Mass: " << 1.f/inverseMass << "  |  ";
+    std::cout << "Sim Mass :" << simMass << '\n';
 }
 
 void Projectile::integrateEulerSemi(double t)

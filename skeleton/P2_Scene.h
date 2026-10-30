@@ -51,7 +51,7 @@ public:
         childConfig.meanSpeed = 5.f;
         childConfig.desvSpeed = 2.f;
 
-        childConfig.meanAliveTime = 10.f;
+        childConfig.meanAliveTime = 1.f;
 
         childConfig.meanColor = { 0.2f, 0.2f, 0.8f, 1.f };
         childConfig.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };

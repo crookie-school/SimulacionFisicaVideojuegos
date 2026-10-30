@@ -8,7 +8,7 @@ class Projectile :
 {
 public:
     Projectile(const Vector3D& Pos, const Vector3D& dir, float realVel, float simVel, float mass)
-        : Particle(Pos, 0, 20.f), realMass(mass)
+        : Particle(Pos, mass, 99999.f), simMass(mass)
     {
         updateSimulatedMassAndGravity(realVel, simVel);
 
@@ -19,7 +19,7 @@ public:
 
     virtual void integrateEulerSemi(double t) override;
 private:
-    float realMass;
+    float simMass;
     float simGravity;
 };
 

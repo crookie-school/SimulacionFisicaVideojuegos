@@ -7,33 +7,24 @@
 #include "ForceGenerator.h"
 #include <random>
 
-static const Vector3D WIND_VOL_POS = { 0.f, 0.f, -100.f };
-static const Vector3D WIND_VOL_SZE = { 50.f, 50.f, 50.f};
-
 class P3_Scene :
     public Scene
 {
 public:
     explicit P3_Scene(std::string name) : Scene(std::move(name)),
-        gravity({ 0.f, -10.f, 0.f }), bouyancy({ 0.f, 5.f, 0.f }), pGrav({ 10.f, 20.f, 0.f }, 1.f, 20.f), pGravManual({ 15.f, 20.f, 0.f }, 1.f, 20.f), pGravPesada({ 20.f, 20.f, 0.f }, 20.f, 20.f), pBouy({ -10.f, 20.f, 0.f }, 2.f, 20.f),
-        wind({ -100.f, 0.f, 0.f }, WIND_VOL_POS, WIND_VOL_SZE), pWind(WIND_VOL_POS + WIND_VOL_SZE * 0.5f, 5.f, 100.f, { 1.f, 1.f, 0.f, 1.f }),
-        windVolShapeMarkers1(WIND_VOL_POS, 1.f, 9999.f), windVolShapeMarkers2(WIND_VOL_POS + WIND_VOL_SZE, 1.f, 9999.f),
-        tornado(20.f, 0.f, WIND_VOL_POS, WIND_VOL_SZE), // La misma forma que la del volumen del viento para reusar los marcadores
-        explosion({100.f, 0.f, 0.f}, 2500.f, 25.f, 1.5f)
+        AOEorigin({0.f, 0.f, 0.f})
     {
     }
 
     void init() override
     {
-        pGravManual.setAcc({ 0.f, -10.f, 0.f });
-
         sys = new ParticleSystem(Vector3D(0.f, 0.f, 0.f));
 
-
+        // Configuraci'on del generador que usamos para crear particulas en el AOE
         ParticleGenerationConfig config;
         config.shape = GeneratorShape::Box;
-        config.meanPose = Vector3D{ 100.f, 0.f, 0.f };
-        config.desvPose = Vector3D{ 7.f, 7.f, 7.f };
+        config.meanPose = AOEorigin.p;
+        config.desvPose = AOEsize/2.f;
 
         config.velType = GeneratorVelType::Radial;
         config.meanVel = Vector3D{ 0.f, 0.f, 0.f };
@@ -41,7 +32,7 @@ public:
         config.meanSpeed = 0.f;
         config.desvSpeed = 0.f;
 
-        config.meanAliveTime = 20.f;
+        config.meanAliveTime = 5.f;
         config.desvAliveTime = 0.f;
 
         config.meanMass = 1.f;
@@ -53,27 +44,32 @@ public:
         config.meanColor = { 0.8f, 0.6f, 0.3f, 1.f };
         config.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
 
-        gen = new ParticleGenerator(5.f, config);
-        gen->setEmitting(false);
+        gen = new ParticleGenerator(200.f, config);
+        gen->setEmitting(true);
+
+
+        // Crea una caja con lineas para ver el area de efecto claramente (me lo enseñó un compañero)
+        physx::PxShape* shape = CreateShape(physx::PxBoxGeometry(AOEsize / 2.f));
+        shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+        shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+        AOEDebugBox = new RenderItem(shape, &AOEorigin, { 0.f, 0.f, 0.f, 1.f });
+
+
+        // Creamos los generadores
+        gravityFG = new GravityForceGenerator({0.f, -10.f, 0.f});
+        windFG = new WindForceGenerator({ 100.f, 0.f, 0.f }, AOEorigin.p - AOEsize / 2.f, AOEsize);
+        tornadoFG = new TornadoForceGenerator(10.f, 2.f, AOEorigin.p - AOEsize / 2.f, AOEsize);
+        explosionFG = new ExplosionForceGenerator(AOEorigin.p, 100000.f, AOEsize.magnitudeSquared(), 0.05f);
     }
 
     void update(double dt) override
     {
+        if (enableGravity) gravityFG->updateForce(*sys, dt);
+        if (enableWind) windFG->updateForce(*sys, dt);
+        if (enableTornado) tornadoFG->updateForce(*sys, dt);
+        explosionFG->updateForce(*sys, dt);
 
-        gravity.updateForce(&pGrav, dt);
-        gravity.updateForce(&pGravPesada, dt);
-        bouyancy.updateForce(&pBouy, dt);
-
-        //wind.updateForce(&pWind, dt);
-        tornado.updateForce(&pWind, dt);
-
-        pGrav.integrateEulerSemi(dt);
-        pGravManual.integrateEulerSemi(dt);
-        pGravPesada.integrateEulerSemi(dt);
-        pBouy.integrateEulerSemi(dt);
-        pWind.integrateEulerSemi(dt);
-
-        explosion.updateForce(*sys, dt);
+        gen->update(*sys, dt);
         sys->update(dt);
     }
 
@@ -81,13 +77,14 @@ public:
     {
         switch (key)
         {
-            case 'j': pWind.addForce({ 0.f, -800.f, 0.f }); break; // Push down
-            case 'k': pWind.addForce({ 0.f, 800.f, 0.f }); break; // Push up
-            case 'h': pWind.addForce({-800.f, 0.f, 0.f}); break; // Push to the left
-            case 'l': pWind.addForce({ 800.f, 0.f, 0.f}); break; // Push to the right
+        case 'e': gen->setEmitting(!gen->isEmitting()); std::cout << "Emission: " << (gen->isEmitting() ? "Activated" : "Deactivated") << '\n'; break;
+        case '+': gen->setEmissionRate(gen->getEmissionRate() + 50); std::cout << "Emission Rate: " << gen->getEmissionRate() << '\n'; break;
+        case '-': gen->setEmissionRate(gen->getEmissionRate() - 50); std::cout << "Emission Rate: " << gen->getEmissionRate() << '\n'; break;
 
-            case 'g': gen->generate(*sys, 1000); std::cout << "Generating particles\n"; break;
-            case 'e': explosion.beginExplosion(); std::cout << "Explosion started\n"; break;
+        case 'g': enableGravity = !enableGravity; std::cout << "Gravity: " << (enableGravity ? "Activated" : "Deactivated") << '\n'; break;
+        case 'r': enableWind = !enableWind; std::cout << "Wind: " << (enableWind ? "Activated" : "Deactivated") << '\n'; break;
+        case 't': enableTornado = !enableTornado; std::cout << "Tornado: " << (enableTornado ? "Activated" : "Deactivated") << '\n'; break;
+        case 'x': explosionFG->beginExplosion(); std::cout << "Explosion started\n"; break;
         }
     }
 
@@ -95,25 +92,31 @@ public:
     {
         delete sys;
         delete gen;
+        AOEDebugBox->release();
+
+        delete gravityFG;
+        delete windFG;
+        delete tornadoFG;
+        delete explosionFG;
     }
 
 private:
-    GravityForceGenerator gravity;
-    GravityForceGenerator bouyancy;
-    Particle pGrav;
-    Particle pGravManual;
-    Particle pGravPesada;
-    Particle pBouy;
-
-    WindForceGenerator wind;
-    TornadoForceGenerator tornado;
-    Particle pWind;
-    Particle windVolShapeMarkers1;
-    Particle windVolShapeMarkers2;
-
-
     ParticleSystem* sys;
     ParticleGenerator* gen;
-    ExplosionForceGenerator explosion;
+
+    // Caja para visualizar el AOE (Area of effect)
+    physx::PxTransform AOEorigin;
+    Vector3 AOEsize = { 80, 80, 80 };
+    RenderItem* AOEDebugBox;
+
+    // Generadores de fuerzas
+    bool enableGravity = false;
+    GravityForceGenerator* gravityFG;
+    bool enableWind = false;
+    WindForceGenerator* windFG;
+    bool enableTornado = false;
+    TornadoForceGenerator* tornadoFG;
+    // La explosion solo se activa con la funci'on beginExplosion()
+    ExplosionForceGenerator* explosionFG;
 };
 
