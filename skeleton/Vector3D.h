@@ -107,7 +107,6 @@ public:
 		return physx::PxVec3(_x, _y, _z);
 	}
 
-private:
 	float _x, _y, _z;
 };
 

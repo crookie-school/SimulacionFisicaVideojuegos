@@ -3,6 +3,7 @@
 #include <functional>
 #include "Particle.h"
 #include "ParticleSystem.h"
+#include "ImGui/imgui.h"
 
 enum class GeneratorShape {Point, Box, Sphere, Cylinder};
 enum class GeneratorVelType {Independent, Radial};
@@ -21,7 +22,53 @@ struct ParticleGenerationConfig {
 	Vector4 meanColor = { 1.f, 1.f, 1.f, 1.f }, desvColor = { 0.f, 0.f, 0.f, 0.f };
 
 	std::function<void(Particle*)> onDeathCallback = std::function<void(Particle*)>(nullptr);
+
+	// Muestra un menu de configuracion para la configuracion de un generador
+	void showUI()
+	{
+		ImGui::BeginGroup();
+		ImGui::Text("Particle Generation Configuration");
+		// Configurar posicion
+		ImGui::SliderFloat3("Mean position", &meanPose._x, -100.f, 100.f);
+		ImGui::SliderFloat3("Desv position", &desvPose._x, 0.f, 100.f);
+
+		// Configurar la forma
+		static const char* shapeTypes[] = { "Point", "Box", "Sphere", "Cylinder" };
+		ImGui::Combo("Shape", (int*)&shape, shapeTypes, 4);
+
+		// Configurar la velocidad
+		int veltype = static_cast<int>(velType);
+		static const char* velTypes[] = { "Independent", "Radial" };
+		ImGui::Combo("Velocity type", &veltype, velTypes, 2);
+		velType = (GeneratorVelType)veltype;
+
+		if (velType == GeneratorVelType::Independent)
+		{
+			ImGui::SliderFloat3("Mean velocity", &meanVel._x, -500.f, 500.f);
+			ImGui::SliderFloat3("Desv velocity", &desvVel._x, 0.f, 500.f);
+		}
+		else if (velType == GeneratorVelType::Radial)
+		{
+			ImGui::SliderFloat("Mean velocity", &meanSpeed, 0.f, 500.f);
+			ImGui::SliderFloat("Desv velocity", &desvSpeed, 0.f, 500.f);
+		}
+
+		// Configuar el tiempo de vida
+		ImGui::DragFloat("Mean alive time", &meanAliveTime, 1.f, 0.f, 10.f);
+		ImGui::DragFloat("Desv alive time", &desvAliveTime, 1.f, 0.f, 10.f);
+
+		// Configurar el damping
+		ImGui::DragFloat("Mean damping", &meanDamping, 1.f, 0.1f, 1.f);
+		ImGui::DragFloat("Desv damping", &desvDamping, 1.f, 0.1f, 1.f);
+
+		// Configurar el color
+		ImGui::ColorEdit4("Mean color", &meanColor.x);
+		ImGui::ColorEdit4("Desv color", &desvColor.x);
+		ImGui::EndGroup();
+	}
 };
+
+
 
 class ParticleGenerator
 {
@@ -58,6 +105,32 @@ public:
 	void setColor(const Vector4& col) { _config.meanColor = col; }
 	Vector4 getColor() const { return _config.meanColor; }
 
+	void setConfig(const ParticleGenerationConfig& config) { _config = config; }
+
+	void showUI(bool showConfigUI = false)
+	{
+		ImGui::BeginGroup();
+		ImGui::Text("Particle Generator Configuration");
+
+		// Activar emision
+		ImGui::Checkbox("Enable emission", &_isEmitting);
+		ImGui::SliderFloat("Emission rate", &_emissionRate, 1, 5000);
+
+		// Limitado pero bueno, sirve para probar en las demos
+		const char* distTypes[] = {"Uniform", "Normal"};
+		if (ImGui::Combo("Distribution", &_distChosen, distTypes, 2))
+		{
+			if (_distChosen == 0)
+				_dist = std::uniform_real_distribution<float>(-1, 1);
+			else
+				_dist = std::normal_distribution<float>(0, 1);
+		}
+
+		if(showConfigUI) _config.showUI();
+
+		ImGui::EndGroup();
+	}
+
 private:
 
 	Vector3D randVector(const Vector3D& mean, const Vector3D& desv)
@@ -83,6 +156,6 @@ private:
 	bool _isEmitting;
 	std::mt19937 _mt;
 	ParticleGenerationConfig _config;
-	std::function<float(std::mt19937&)> _dist;
+	std::function<float(std::mt19937&)> _dist; int _distChosen = 0; // (0 uniform, 1 normal) Esto no muestra la distribucion correct si se pasa una por el codigo distinta pero no se me ocurre como hacerlo
 };
 

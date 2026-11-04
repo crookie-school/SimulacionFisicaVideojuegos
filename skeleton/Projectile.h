@@ -7,8 +7,8 @@ class Projectile :
     public Particle
 {
 public:
-    Projectile(const Vector3D& Pos, const Vector3D& dir, float realVel, float simVel, float mass)
-        : Particle(Pos, mass, 99999.f), simMass(mass)
+    Projectile(const Vector3D& Pos, const Vector3D& dir, float realVel, float simVel, float mass, const physx::PxVec4& col)
+        : Particle(Pos, mass, 99999.f, col), simMass(mass)
     {
         updateSimulatedMassAndGravity(realVel, simVel);
 

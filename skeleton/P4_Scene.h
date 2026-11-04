@@ -48,18 +48,47 @@ public:
         p4->integrateEulerSemi(dt);
     }
 
-    void keyPress(unsigned char key, const physx::PxTransform& camera) override
+    void drawGui() override
     {
-        switch (key)
+        // Titulos
+        ImGui::Begin("Practica 4");
+        ImGui::Text("Settings for scene 4");
+        ImGui::Spacing();
+
+        if (ImGui::CollapsingHeader("Gravity settings"))
         {
-        case 'f': 
-            std::cout << "Aplicando fuerza a particula con muelle estático\n";
-            p3->addForce({ 500.f, 0.f, 0.f });
-            break;
-        case 'k': f3->setK(f3->getK() + 5.); std::cout << "Constante del muelle: " << f3->getK() << '\n'; break;
-        case 'j': f3->setK(f3->getK() - 5.); std::cout << "Constante del muelle: " << f3->getK() << '\n'; break;
+            ImGui::PushID(0);
+            g->showUI();
+            ImGui::PopID();
+        }
+        if (ImGui::CollapsingHeader("Spring 1 settings"))
+        {
+            ImGui::PushID(1);
+            f1->showUI();
+            ImGui::PopID();
+        }
+        if (ImGui::CollapsingHeader("Spring 2 settings"))
+        {
+            ImGui::PushID(2);
+            f2->showUI();
+            ImGui::PopID();
+        }
+        if (ImGui::CollapsingHeader("Anchored Spring settings"))
+        {
+            ImGui::PushID(2);
+            if(ImGui::Button("Apply force")) p3->addForce({ 500.f, 0.f, 0.f });
+            f3->showUI();
+            ImGui::PopID();
+        }
+        if (ImGui::CollapsingHeader("Bouyancy settings"))
+        {
+            ImGui::PushID(3);
+            f4->showUI();
+            ImGui::PopID();
         }
 
+
+        ImGui::End();
     }
 
     void cleanup() override

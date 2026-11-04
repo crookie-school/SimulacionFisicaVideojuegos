@@ -4,6 +4,10 @@
 
 #include "core.hpp"
 #include "RenderUtils.hpp"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_opengl3.h"
+#include "ImGui/imgui_impl_glut.h"
+#include "SceneManager.h"
 
 
 using namespace physx;
@@ -49,11 +53,16 @@ namespace
 
 void motionCallback(int x, int y)
 {
+	ImGui_ImplGLUT_MotionFunc(x, y);
+	if (ImGui::GetIO().WantCaptureMouse) return;
 	sCamera->handleMotion(x, y);
 }
 
 void keyboardCallback(unsigned char key, int x, int y)
 {
+	ImGui_ImplGLUT_KeyboardFunc(key, x, y);
+	if (ImGui::GetIO().WantCaptureKeyboard) return;
+
 	if(key==27)
 		exit(0);
 
@@ -61,8 +70,16 @@ void keyboardCallback(unsigned char key, int x, int y)
 		keyPress(key, sCamera->getTransform());
 }
 
+void keyboardUpCallback(unsigned char key, int x, int y)
+{
+	ImGui_ImplGLUT_KeyboardUpFunc(key, x, y);
+}
+
 void mouseCallback(int button, int state, int x, int y)
 {
+	ImGui_ImplGLUT_MouseFunc(button, state, x, y);
+	if (ImGui::GetIO().WantCaptureMouse) return;
+
 	sCamera->handleMouse(button, state, x, y);
 }
 
@@ -71,12 +88,26 @@ void idleCallback()
 	glutPostRedisplay();
 }
 
+void reshapeCallback(int w, int h)
+{
+	ImGui_ImplGLUT_ReshapeFunc(w, h);
+	glViewport(0, 0, w, h);
+}
+
 float stepTime = 0.0f;
 //#define FIXED_STEP
 
 void renderCallback()
 {
 	double t = GetCounter();
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGLUT_NewFrame();
+	ImGui::NewFrame();
+	//ImGui::ShowDemoWindow();
+
+	SceneManager::instance().drawGui();
+
 #ifdef FIXED_STEP
 	if (t < (1.0f / 30.0f))
 	{
@@ -95,7 +126,9 @@ void renderCallback()
 	stepPhysics(true, t);
 #endif
 
+	ImGui::Render();
 	startRender(sCamera->getEye(), sCamera->getDir());
+
 
 	//fprintf(stderr, "Num Render Items: %d\n", static_cast<int>(gRenderItems.size()));
 	for (auto it = gRenderItems.begin(); it != gRenderItems.end(); ++it)
@@ -124,6 +157,9 @@ void renderCallback()
 	//	renderActors(&actors[0], static_cast<PxU32>(actors.size()), true, Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 	//}
 
+	
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 	finishRender();
 }
 
@@ -131,6 +167,7 @@ void exitCallback(void)
 {
 	delete sCamera;
 	cleanupPhysics(true);
+	releaseImGui();
 }
 }
 
@@ -141,12 +178,15 @@ void renderLoop()
 
 	setupDefaultWindow("Simulacion Fisica Videojuegos");
 	setupDefaultRenderState();
+	setupImGui();
 
 	glutIdleFunc(idleCallback);
 	glutDisplayFunc(renderCallback);
 	glutKeyboardFunc(keyboardCallback);
+	glutKeyboardUpFunc(keyboardUpCallback);
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(motionCallback);
+	glutReshapeFunc(reshapeCallback);
 	motionCallback(0,0);
 
 	atexit(exitCallback);

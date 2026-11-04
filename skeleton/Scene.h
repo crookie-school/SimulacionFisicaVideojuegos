@@ -22,6 +22,8 @@ public:
     // dt: tiempo en segundos transcurrido desde la última actualización.
     virtual void update(double dt) = 0;
 
+    virtual void drawGui() {}
+
     // Manejo de pulsación de tecla.
     // Se recibe la tecla pulsada y la transformada de la cámara para
     // permitir respuestas dependientes de la orientación/posición de la cámara.

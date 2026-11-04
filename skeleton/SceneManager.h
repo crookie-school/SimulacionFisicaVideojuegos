@@ -33,6 +33,8 @@ public:
     // dt es el tiempo en segundos desde la última actualización.
     void update(double dt);
 
+    void drawGui();
+
     // Reenvía eventos de teclado a la escena actual.
     void keyPress(unsigned char key, const physx::PxTransform& cameraTransform);
 

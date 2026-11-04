@@ -12,8 +12,6 @@ void ParticleGenerator::update(ParticleSystem& particleSys, double dt)
 
 Vector3D ParticleGenerator::samplePoint()
 {
-	static std::uniform_real_distribution<float> _uniform_dist(-1, 1); // Lo he puesto static para que se comparta entre todas las llamadas
-
 	switch (_config.shape)
 	{
 	case GeneratorShape::Point: return _config.meanPose;
@@ -25,24 +23,24 @@ Vector3D ParticleGenerator::samplePoint()
 	case GeneratorShape::Sphere: {
 		Vector3D origen = _config.meanPose;
 		Vector3D desv = {
-			_uniform_dist(_mt),
-			_uniform_dist(_mt),
-			_uniform_dist(_mt)
+			_dist(_mt),
+			_dist(_mt),
+			_dist(_mt)
 		};
 		desv.normalize();
-		desv *= _config.desvPose.magnitude() * _uniform_dist(_mt);
+		desv *= _config.desvPose.magnitude() * _dist(_mt);
 		return origen + desv;
 	}
 	case GeneratorShape::Cylinder: {
 		Vector3D origen = _config.meanPose;
 		Vector3D desv = {
-			_uniform_dist(_mt),
+			_dist(_mt),
 			0,
-			_uniform_dist(_mt)
+			_dist(_mt)
 		};
 		desv.normalize();
-		desv *= _config.desvPose.magnitude() * _uniform_dist(_mt);
-		desv.setY(_uniform_dist(_mt) * _config.desvPose.getY() * 2);
+		desv *= _config.desvPose.magnitude() * _dist(_mt);
+		desv.setY(_dist(_mt) * _config.desvPose.getY() * 2);
 		return origen + desv;
 	}
 	}

@@ -43,6 +43,8 @@ void SceneManager::update(double dt) {
     }
 }
 
+void SceneManager::drawGui() { if (m_currentScene) m_currentScene->drawGui(); }
+
 // Reenvía eventos de teclado a la escena actual. Mantener este método simple
 // permite centralizar atajos globales si se desea en el futuro.
 void SceneManager::keyPress(unsigned char key, const physx::PxTransform& cameraTransform) {

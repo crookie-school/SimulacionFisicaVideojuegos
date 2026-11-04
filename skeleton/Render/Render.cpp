@@ -29,6 +29,9 @@
 
 #include "Render.h"
 #include <assert.h>
+#include "../ImGui/imgui.h"
+#include "../ImGui/imgui_impl_glut.h"
+#include "../ImGui/imgui_impl_opengl3.h"
 
 using namespace physx;
 
@@ -279,6 +282,24 @@ void setupDefaultRenderState()
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specularColor);
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 	glEnable(GL_LIGHT0);
+}
+
+void setupImGui()
+{
+	ImGui::CreateContext();
+
+	//ImGui::StyleColorsDark();
+
+	ImGui_ImplGLUT_Init();
+	ImGui_ImplOpenGL3_Init();
+	ImGui_ImplGLUT_InstallFuncs();
+}
+
+void releaseImGui()
+{
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGLUT_Shutdown();
+	ImGui::DestroyContext();
 }
 
 

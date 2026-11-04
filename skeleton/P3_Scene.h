@@ -5,6 +5,7 @@
 #include <iostream>
 #include "Particle.h"
 #include "ForceGenerator.h"
+#include "ParticleGenerator.h"
 #include <random>
 
 class P3_Scene :
@@ -21,30 +22,29 @@ public:
         sys = new ParticleSystem();
 
         // Configuraci'on del generador que usamos para crear particulas en el AOE
-        ParticleGenerationConfig config;
-        config.shape = GeneratorShape::Box;
-        config.meanPose = AOEorigin.p;
-        config.desvPose = AOEsize/2.f;
+        genConfig.shape = GeneratorShape::Box;
+        genConfig.meanPose = AOEorigin.p;
+        genConfig.desvPose = AOEsize/2.f;
 
-        config.velType = GeneratorVelType::Radial;
-        config.meanVel = Vector3D{ 0.f, 0.f, 0.f };
-        config.desvVel = Vector3D{ 0.f, 0.f, 0.f };
-        config.meanSpeed = 0.f;
-        config.desvSpeed = 0.f;
+        genConfig.velType = GeneratorVelType::Radial;
+        genConfig.meanVel = Vector3D{ 0.f, 0.f, 0.f };
+        genConfig.desvVel = Vector3D{ 0.f, 0.f, 0.f };
+        genConfig.meanSpeed = 0.f;
+        genConfig.desvSpeed = 0.f;
 
-        config.meanAliveTime = 5.f;
-        config.desvAliveTime = 0.f;
+        genConfig.meanAliveTime = 5.f;
+        genConfig.desvAliveTime = 0.f;
 
-        config.meanMass = 1.f;
-        config.desvMass = 0.f;
+        genConfig.meanMass = 1.f;
+        genConfig.desvMass = 0.f;
 
-        config.meanDamping = 0.99f;
-        config.desvDamping = 0.f;
+        genConfig.meanDamping = 0.99f;
+        genConfig.desvDamping = 0.f;
 
-        config.meanColor = { 0.8f, 0.6f, 0.3f, 1.f };
-        config.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
+        genConfig.meanColor = { 0.8f, 0.6f, 0.3f, 1.f };
+        genConfig.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
 
-        gen = new ParticleGenerator(200.f, config);
+        gen = new ParticleGenerator(200.f, genConfig);
         gen->setEmitting(true);
 
 
@@ -62,6 +62,55 @@ public:
         explosionFG = new ExplosionForceGenerator(AOEorigin.p, 100000.f, AOEsize.magnitudeSquared(), 0.05f);
     }
 
+    void drawGui() override
+    {
+        // Titulos
+        ImGui::Begin("Practica 3");
+        ImGui::Text("Settings for scene 3");
+        ImGui::Spacing();
+
+        // Configuracion del generador
+        if (ImGui::CollapsingHeader("Generator settings"))
+        {
+            gen->showUI(true);
+        }
+
+        if (ImGui::CollapsingHeader("Gravity settings"))
+        {
+            ImGui::PushID(0);
+            ImGui::Checkbox("Enabled", &enableGravity);
+            gravityFG->showUI();
+            ImGui::PopID();
+        }
+        if (ImGui::CollapsingHeader("Wind settings"))
+        {
+            ImGui::PushID(1);
+            ImGui::Checkbox("Enabled", &enableWind);
+            windFG->showUI();
+            ImGui::PopID();
+        }
+        if (ImGui::CollapsingHeader("Tornado settings"))
+        {
+            ImGui::PushID(2);
+            ImGui::Checkbox("Enabled", &enableTornado);
+            tornadoFG->showUI();
+            ImGui::PopID();
+        }
+        if (ImGui::CollapsingHeader("Explosion settings"))
+        {
+            ImGui::PushID(3);
+            if (ImGui::Button("Start explosion"))
+            {
+                explosionFG->beginExplosion();
+            }
+            explosionFG->showUI();
+            ImGui::PopID();
+        }
+
+
+        ImGui::End();
+    }
+
     void update(double dt) override
     {
         if (enableGravity) gravityFG->updateForce(*sys, dt);
@@ -71,21 +120,6 @@ public:
 
         gen->update(*sys, dt);
         sys->update(dt);
-    }
-
-    void keyPress(unsigned char key, const physx::PxTransform& camera) override
-    {
-        switch (key)
-        {
-        case 'e': gen->setEmitting(!gen->isEmitting()); std::cout << "Emission: " << (gen->isEmitting() ? "Activated" : "Deactivated") << '\n'; break;
-        case '+': gen->setEmissionRate(gen->getEmissionRate() + 50); std::cout << "Emission Rate: " << gen->getEmissionRate() << '\n'; break;
-        case '-': gen->setEmissionRate(gen->getEmissionRate() - 50); std::cout << "Emission Rate: " << gen->getEmissionRate() << '\n'; break;
-
-        case 'g': enableGravity = !enableGravity; std::cout << "Gravity: " << (enableGravity ? "Activated" : "Deactivated") << '\n'; break;
-        case 'r': enableWind = !enableWind; std::cout << "Wind: " << (enableWind ? "Activated" : "Deactivated") << '\n'; break;
-        case 't': enableTornado = !enableTornado; std::cout << "Tornado: " << (enableTornado ? "Activated" : "Deactivated") << '\n'; break;
-        case 'x': explosionFG->beginExplosion(); std::cout << "Explosion started\n"; break;
-        }
     }
 
     void cleanup() override
@@ -101,6 +135,7 @@ public:
     }
 
 private:
+    ParticleGenerationConfig genConfig;
     ParticleSystem* sys;
     ParticleGenerator* gen;
 

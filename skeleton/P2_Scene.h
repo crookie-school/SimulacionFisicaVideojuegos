@@ -6,6 +6,7 @@
 #include "ParticleSystem.h"
 #include "ParticleGenerator.h"
 #include "ForceGenerator.h"
+#include "ImGui/imgui.h"
 #include <random>
 
 class P2_Scene :
@@ -16,65 +17,150 @@ public:
     {
     }
 
+    struct ParticleGenUIConfig
+    {
+        char name[32];
+        ParticleGenerationConfig config;
+    };
+
     void init() override {
         sys = new ParticleSystem();
 
+        // Configuraciones por defecto
+        ParticleGenerationConfig config1;
+        config1.shape = GeneratorShape::Cylinder;
+        config1.meanPose = Vector3D{ 0.f, 0.f, 0.f };
+        config1.desvPose = Vector3D{ 10.f, 10.f, 10.f };
 
-        ParticleGenerationConfig config;
-        config.shape = GeneratorShape::Cylinder;
-        config.meanPose = Vector3D{ 0.f, 0.f, 0.f };
-        config.desvPose = Vector3D{ 10.f, 10.f, 10.f };
+        config1.velType = GeneratorVelType::Independent;
+        config1.meanVel = Vector3D{ 0.f, 0.f, 0.f };
+        config1.desvVel = Vector3D{ 0.f, 0.f, 0.f };
+        config1.meanSpeed = 10.f;
+        config1.desvSpeed = 0.f;
 
-        config.velType = GeneratorVelType::Independent;
-        config.meanVel = Vector3D{ 0.f, 0.f, 0.f };
-        config.desvVel = Vector3D{ 0.f, 0.f, 0.f };
-        config.meanSpeed = 10.f;
-        config.desvSpeed = 0.f;
+        config1.meanAliveTime = 2.f;
+        config1.desvAliveTime = 0.f;
 
-        config.meanAliveTime = 2.f;
-        config.desvAliveTime = 0.f;
+        config1.meanMass = 1.f;
+        config1.desvMass = 0.f;
 
-        config.meanMass = 1.f;
-        config.desvMass = 0.f;
+        config1.meanDamping = 0.99f;
+        config1.desvDamping = 0.f;
 
-        config.meanDamping = 0.99f;
-        config.desvDamping = 0.f;
-
-        config.meanColor = { 0.8f, 0.2f, 0.3f, 1.f };
-        config.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
+        config1.meanColor = { 0.8f, 0.2f, 0.3f, 1.f };
+        config1.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
+        configs.push_back({
+            "Config 1",
+            config1 
+            });
 
         // Parte opcional - Cuando mueren las particulas originales, salen 3 azules con velocidad radial desde la posicion donde murio la anterior
-        ParticleGenerationConfig childConfig;
-        childConfig.shape = GeneratorShape::Sphere;
-        childConfig.desvPose = Vector3D(1.f, 1.f, 1.f);
+        ParticleGenerationConfig config2;
+        config2.shape = GeneratorShape::Sphere;
+        config2.desvPose = Vector3D(1.f, 1.f, 1.f);
 
-        childConfig.velType = GeneratorVelType::Radial;
-        childConfig.meanSpeed = 5.f;
-        childConfig.desvSpeed = 2.f;
+        config2.velType = GeneratorVelType::Radial;
+        config2.meanSpeed = 5.f;
+        config2.desvSpeed = 2.f;
 
-        childConfig.meanAliveTime = 1.f;
+        config2.meanAliveTime = 1.f;
 
-        childConfig.meanColor = { 0.2f, 0.2f, 0.8f, 1.f };
-        childConfig.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
+        config2.meanColor = { 0.2f, 0.2f, 0.8f, 1.f };
+        config2.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
+        configs.push_back({
+            "Config 2",
+            config2
+            });
 
-        childGen = new ParticleGenerator(0.f, childConfig);
-        /*config.onDeathCallback = [this](Particle* p)
-            {
-                childGen->setPosition(p->getPos());
-                childGen->generate(*sys, 2);
-            };*/
-
-        gen = new ParticleGenerator(5.f, config);
-        gen->setEmitting(false);
+        gen = new ParticleGenerator(5.f, config1);
+        childGen = new ParticleGenerator(0.f, config2);
     }
 
     void update(double dt) override {
-        if (enableGravity) gravityFG.updateForce(*sys, dt);
+        if(enableGravity) gravityFG.updateForce(*sys, dt);
+
         sys->update(dt);
         gen->update(*sys, dt);
     }
 
-    void keyPress(unsigned char key, const physx::PxTransform& camera) override {
+    void showGenerationConfig(int which)
+    {
+        ImGui::PushID(which);
+        ParticleGenUIConfig& conf = configs[which];
+
+        // Cambiar el nombre
+        ImGui::InputText("Nombre", conf.name, 32);
+
+        conf.config.showUI();
+
+        ImGui::PopID();
+    }
+
+    void drawGui() override
+    {
+        // Titulos
+        ImGui::Begin("Practica 2");
+        ImGui::Text("Settings for scene 2");
+        ImGui::Spacing();
+
+        // --------- UI especificos de la practica 2 ---------
+        // Boton para generar particulas
+        static int amount = 500;
+        ImGui::DragInt("Amount", &amount, 1, 1000);
+        ImGui::SameLine();
+        if (ImGui::Button("Generate"))
+            gen->generate(*sys, amount);
+        // Gravedad
+        ImGui::Checkbox("Enable gravity", &enableGravity);
+
+        // --------- UI del generador principal ---------
+        gen->showUI();
+
+        std::vector<char*> names(configs.size());
+        for (int i = 0; i < configs.size(); ++i) names[i] = configs[i].name;
+        // --------- UI de la configuracion del generador principal ---------
+        ImGui::Spacing();
+        if(ImGui::CollapsingHeader("Main generation settings"))
+        {
+            ImGui::Combo("Preset", &selectedConf, names.data(), names.size());
+
+            showGenerationConfig(selectedConf);
+        }
+
+        // --------- UI de la configuracion del generador de particulas hijas -----------
+        ImGui::Spacing();
+        if(ImGui::CollapsingHeader("Children generation settings"))
+        {
+            static int childAmountOnDeath = 2; // Cuantas generar al morir
+            static bool spawnChildren = false;
+            if (ImGui::Checkbox("Spawn children", &spawnChildren))
+            {
+                std::function<void(Particle*)> onDeath;
+                if (spawnChildren)
+                    onDeath = [this](Particle* p)
+                    {
+                        childGen->setPosition(p->getPos()); childGen->generate(*sys, childAmountOnDeath);
+                    };
+                configs[selectedConf].config.onDeathCallback = onDeath;
+            }
+
+            // Mostramos la configuracion de las hijas para editar comodamente
+            if (spawnChildren)
+            {
+                ImGui::Combo("Children config", &childrenConf, names.data(), names.size());
+                ImGui::DragInt("Children amount", &childAmountOnDeath, 1.f, 1.f, 50.f);
+                showGenerationConfig(childrenConf);
+            }
+        }
+
+        gen->setConfig(configs[selectedConf].config);
+        childGen->setConfig(configs[childrenConf].config);
+
+        ImGui::End();
+    }
+
+    // Por si alguna vez quito lo de ImGui
+    /*void keyPress(unsigned char key, const physx::PxTransform& camera) override {
         switch (key)
         {
         case 'g': gen->generate(*sys, 500); std::cout << "Generated 500 particles\n"; break;
@@ -112,7 +198,7 @@ public:
             "\t- z/x: Deactivate/Activate gravity\n"; break;
         default:  break;
         }
-    }
+    }*/
 
     void cleanup() override {
         delete sys;
@@ -124,6 +210,10 @@ private:
     ParticleSystem* sys;
     ParticleGenerator* gen;
     ParticleGenerator* childGen;
+
+    std::vector<ParticleGenUIConfig> configs;
+    int selectedConf = 0;
+    int childrenConf = 1;
 
     bool enableGravity = false;
     GravityForceGenerator gravityFG;
