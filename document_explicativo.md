@@ -26,37 +26,6 @@ Cada escena es una demo de dicha práctica. A continuación se describen las tec
 - Escena 3 (demo de práctica 3): [3]
 - Escena 4 (demo de práctica 4): [4]
 
-*Teclas de la escena 1*:
-- Bala de cañón: [c]
-- Bala de tanque: [v]
-- Bala de pistola: [b]
-- Aumentar la masa (real) del siguiente proyectil: [y]
-- Disminuir la masa (real) del siguiente proyectil: [h] 
-- Aumentar la velocidad (real) del siguiente proyectil: [u]
-- Disminuir la velocidad (real) del siguiente proyectil: [j]
-
-*Teclas de la escena 2*:
-- Mostrar ayuda de teclas por consola: [h]
-- Generar 500 partículas: [g]
-- Cambiar la posición del generador: [i] [j] [k] [l]
-- Activar o desactivar la emisión de partículas: [e]
-- Cambiar la forma de generación: (Punto) [c], (Esfera) [v], (Cubo) [b], (Cilindro) [n]
-- Aumentar o disminuir la generación por segundo: [+] [-]
-- Cambiar el tipo de velocidad: (Independiente) [t], (Radial) [r]
-- Poner/Quitar velocidad de prueba ({0, 10, 0}) (solo en velocidad independiente): (poner) [y], (quitar) [u]
-- Activar/Desactivar gravedad: [z]
-
-*Teclas de la escena 3*:
-- Activar o desactivar la emisión de partículas: [e]
-- Aumentar o disminuir la generación de partículas por segundo: [+] [-]
-- Activar el generador de gravedad: [g]
-- Activar el generador de viento: [r]
-- Activar el generador de tornado: [t]
-- Activar el generador de explosiones: [x]
-
-*Teclas de la escena 4*: Esta escena no es parte de la entrega, pero bueno, las teclas son las siguientes:
-- Aplicar fuerza horizontal a la partícula blanca: [f]
-- Aumentar o disminuir la constante K: [k] [j]
 
 
 ## Requisitos de programación

@@ -287,6 +287,8 @@ void setupDefaultRenderState()
 void setupImGui()
 {
 	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 	//ImGui::StyleColorsDark();
 

@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include <iostream>
+#include "ImGui/imgui.h"
 
 // Solicita el cambio de escena. Si el nombre no está registrado, se escribe
 // un error en stderr y la solicitud se ignora.
@@ -43,7 +44,42 @@ void SceneManager::update(double dt) {
     }
 }
 
-void SceneManager::drawGui() { if (m_currentScene) m_currentScene->drawGui(); }
+void SceneManager::drawGui() { 
+    // Mostrar menu principal (barra de arriba)
+    if (ImGui::BeginMainMenuBar())
+    {
+        // Item para cambiar de escenas
+        if (ImGui::BeginMenu("Scenes"))
+        {
+            if (ImGui::MenuItem("Empty"))  SceneManager::instance().changeScene("EscenaVacia");
+            if (ImGui::MenuItem("P0"))     SceneManager::instance().changeScene("P0_Scene");
+            if (ImGui::MenuItem("P1"))     SceneManager::instance().changeScene("P1_Scene");
+            if (ImGui::MenuItem("P2"))     SceneManager::instance().changeScene("P2_Scene");
+            if (ImGui::MenuItem("P3"))     SceneManager::instance().changeScene("P3_Scene");
+            if (ImGui::MenuItem("P4"))     SceneManager::instance().changeScene("P4_Scene");
+            ImGui::EndMenu();
+        }
+
+        // Muestra la escena actual
+        if (m_currentScene)
+        {
+            const char* sceneName = m_currentScene.get()->getName().c_str();
+            ImGui::SameLine(ImGui::GetWindowWidth()/2.f - ImGui::CalcTextSize(sceneName).x, 0);
+            ImGui::Text("Current scene: %s", sceneName);
+        }
+
+        // Muestra los fps
+        char fps[32];
+        snprintf(fps, sizeof(fps), "%.1f FPS", ImGui::GetIO().Framerate);
+        float w = ImGui::CalcTextSize(fps).x;
+        ImGui::SameLine(ImGui::GetWindowWidth() - w - 10);
+        ImGui::TextUnformatted(fps);
+
+        ImGui::EndMainMenuBar();
+    }
+
+    if (m_currentScene) m_currentScene->drawGui(); 
+}
 
 // Reenvía eventos de teclado a la escena actual. Mantener este método simple
 // permite centralizar atajos globales si se desea en el futuro.

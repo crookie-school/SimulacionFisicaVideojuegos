@@ -104,6 +104,7 @@ void renderCallback()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGLUT_NewFrame();
 	ImGui::NewFrame();
+	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 	//ImGui::ShowDemoWindow();
 
 	SceneManager::instance().drawGui();
