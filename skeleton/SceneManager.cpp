@@ -65,7 +65,7 @@ void SceneManager::drawGui() {
         {
             const char* sceneName = m_currentScene.get()->getName().c_str();
             ImGui::SameLine(ImGui::GetWindowWidth()/2.f - ImGui::CalcTextSize(sceneName).x, 0);
-            ImGui::Text("Current scene: %s", sceneName);
+            ImGui::Text(sceneName);
         }
 
         // Muestra los fps

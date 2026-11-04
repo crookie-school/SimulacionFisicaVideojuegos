@@ -15,10 +15,36 @@ Cada escena (asignada a 1, 2, 3 o 4) representa una "demo" de las prácticas cor
 Para ver lo que se puede hacer en cada escena mira la siguiente sección que detalla todas las teclas disponibles.
 
 
+## Interfaz gráfica
+He implementado una una interfaz gráfica para que se pueda interactuar con las prácticas de la forma más intuitiva posible.
+Además esto me permitía añadir muchísimos más ajustes de forma cómoda.
+Para ello he utilizado la librería ImGui (https://github.com/ocornut/imgui/), que es una de las más famosas. Simplemente he copiado el código necesario en una carpeta y lo he incluido en la compilación.
+Todo el código necesario para dibujar la UI está dentro de funciones con nombres como 'drawGui' o 'showUI'. He intentado comentar un poco lo que hace cada cosa, pero como tampoco tiene mucho que ver con la asignatura tampoco es super explicativo.
+Este código se puede ignorar, no afecta en nada a la simulación, es solo para permitir modificar los elementos de la simulación en tiempo real de forma cómoda.
+
+El uso debería ser intuitivo, hay un panel principal arriba que incluye un desplegable para cambiar de escenas, la escena actual y el framerate.
+En cada escena saldrá un panel pertinente en el que se pueden modificar los atributos de la escena.
+
+*Escena 1*: La interfaz permite seleccionar un proyectil y configurarlo. Además se pueden crear nuevos proyectles o borrar los proyectiles que no queramos.
+
+*Escena 2*: La interfaz permite generar un número de partículas, activar la gravedad, configurar el generador y las propiedades del generador.
+La escena 2 tiene muchas opciones bajo los desplegables 'Main generation settings' y 'Children generation settings'.
+'Main generatino settings' contiene la configuración de generación de las partículas padre.
+'Children generation settings' contiene la configuración de generación del las partículas hija, pero solo lo muestra si está activada la generación de hijas al morir ('Spawn children').
+
+*Escena 3*: La interfaz permite modificar el generador de partículas (igual que en la escena 2), activar/desactivar y configurar cada generador de fuerzas. Las opciones de cada cosa están bajo los sus desplegables.
+
+*Escena 4*: Esta escena no entra en el proyecto intermedio, pero como la tenía hecha me he visto obligado a ponerle también una interfaz.
+
+
 ## Teclas disponibles
 Cada escena es una demo de dicha práctica. A continuación se describen las teclas disponibles en cada escena.
 
 > [!NOTE] '[<tecla>]' significa que hay que presionar la tecla con el carácter <tecla>.
+
+*Cámara*:
+- Mover: [W] [A] [S] [D]
+- Girar: [Ratón]
 
 *Cambiar de escena*:
 - Escena 1 (demo de práctica 1): [1]
@@ -26,6 +52,8 @@ Cada escena es una demo de dicha práctica. A continuación se describen las tec
 - Escena 3 (demo de práctica 3): [3]
 - Escena 4 (demo de práctica 4): [4]
 
+*Escena 1*:
+- Disparar: [Espacio]
 
 
 ## Requisitos de programación

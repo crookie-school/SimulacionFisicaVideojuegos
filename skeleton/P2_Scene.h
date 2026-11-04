@@ -89,7 +89,7 @@ public:
         ParticleGenUIConfig& conf = configs[which];
 
         // Cambiar el nombre
-        ImGui::InputText("Nombre", conf.name, 32);
+        ImGui::InputText("Name", conf.name, 32);
 
         conf.config.showUI();
 
