@@ -33,6 +33,18 @@ Vector3D ParticleGenerator::samplePoint()
 		desv *= _config.desvPose.magnitude() * _uniform_dist(_mt);
 		return origen + desv;
 	}
+	case GeneratorShape::Cylinder: {
+		Vector3D origen = _config.meanPose;
+		Vector3D desv = {
+			_uniform_dist(_mt),
+			0,
+			_uniform_dist(_mt)
+		};
+		desv.normalize();
+		desv *= _config.desvPose.magnitude() * _uniform_dist(_mt);
+		desv.setY(_uniform_dist(_mt) * _config.desvPose.getY() * 2);
+		return origen + desv;
+	}
 	}
 }
 

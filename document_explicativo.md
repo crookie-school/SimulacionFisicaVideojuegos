@@ -40,7 +40,7 @@ Cada escena es una demo de dicha práctica. A continuación se describen las tec
 - Generar 500 partículas: [g]
 - Cambiar la posición del generador: [i] [j] [k] [l]
 - Activar o desactivar la emisión de partículas: [e]
-- Cambiar la forma de generación: (Punto) [c], (Esfera) [v], (Cubo) [b]
+- Cambiar la forma de generación: (Punto) [c], (Esfera) [v], (Cubo) [b], (Cilindro) [n]
 - Aumentar o disminuir la generación por segundo: [+] [-]
 - Cambiar el tipo de velocidad: (Independiente) [t], (Radial) [r]
 - Poner/Quitar velocidad de prueba ({0, 10, 0}) (solo en velocidad independiente): (poner) [y], (quitar) [u]

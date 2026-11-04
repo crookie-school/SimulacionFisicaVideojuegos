@@ -4,7 +4,7 @@
 #include "Particle.h"
 #include "ParticleSystem.h"
 
-enum class GeneratorShape {Point, Box, Sphere};
+enum class GeneratorShape {Point, Box, Sphere, Cylinder};
 enum class GeneratorVelType {Independent, Radial};
 
 struct ParticleGenerationConfig {

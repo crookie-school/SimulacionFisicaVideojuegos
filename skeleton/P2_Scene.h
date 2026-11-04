@@ -21,11 +21,11 @@ public:
 
 
         ParticleGenerationConfig config;
-        config.shape = GeneratorShape::Sphere;
+        config.shape = GeneratorShape::Cylinder;
         config.meanPose = Vector3D{ 0.f, 0.f, 0.f };
         config.desvPose = Vector3D{ 10.f, 10.f, 10.f };
 
-        config.velType = GeneratorVelType::Radial;
+        config.velType = GeneratorVelType::Independent;
         config.meanVel = Vector3D{ 0.f, 0.f, 0.f };
         config.desvVel = Vector3D{ 0.f, 0.f, 0.f };
         config.meanSpeed = 10.f;
@@ -58,11 +58,11 @@ public:
         childConfig.desvColor = { 0.1f, 0.1f, 0.1f, 0.f };
 
         childGen = new ParticleGenerator(0.f, childConfig);
-        config.onDeathCallback = [this](Particle* p)
+        /*config.onDeathCallback = [this](Particle* p)
             {
                 childGen->setPosition(p->getPos());
                 childGen->generate(*sys, 2);
-            };
+            };*/
 
         gen = new ParticleGenerator(5.f, config);
         gen->setEmitting(false);
@@ -89,6 +89,7 @@ public:
         case 'c': gen->setShape(GeneratorShape::Point); std::cout << "Emission Shape: Point\n"; break;
         case 'v': gen->setShape(GeneratorShape::Sphere); std::cout << "Emission Shape: Sphere\n"; break;
         case 'b': gen->setShape(GeneratorShape::Box); std::cout << "Emission Shape: Box\n"; break;
+        case 'n': gen->setShape(GeneratorShape::Cylinder); std::cout << "Emission Shape: Cylinder\n"; break;
 
         case '+': gen->setEmissionRate(gen->getEmissionRate() + 100); std::cout << "Emission Rate: " << gen->getEmissionRate() << '\n'; break;
         case '-': gen->setEmissionRate(gen->getEmissionRate() - 100); std::cout << "Emission Rate: " << gen->getEmissionRate() << '\n'; break;
@@ -104,7 +105,7 @@ public:
             "\t- g: Generate 500 particles\n"
             "\t- i/j/k/l: Move Generator position\n"
             "\t- e: toggle emission\n"
-            "\t- c/v/b: Change generator shape (Point / Sphere / Box)\n"
+            "\t- c/v/b/n: Change generator shape (Point / Sphere / Box / Cylinder)\n"
             "\t- +/-: Increment/Decrement emission rate by 100\n"
             "\t- r/t: Change velocity type (Radial / Independent)\n"
             "\t- y/u: Change independent particle velocity (y is upwards, u is none)\n"
