@@ -118,11 +118,23 @@ public:
 
         std::vector<char*> names(configs.size());
         for (int i = 0; i < configs.size(); ++i) names[i] = configs[i].name;
+        
         // --------- UI de la configuracion del generador principal ---------
         ImGui::Spacing();
         if(ImGui::CollapsingHeader("Main generation settings"))
         {
             ImGui::Combo("Preset", &selectedConf, names.data(), names.size());
+
+            // botones para crear nuevas configuraciones
+            ImGui::SameLine();
+            if (ImGui::Button("New Preset"))
+            {
+                configs.push_back({
+                    "New Config",
+                    {}
+                    });
+                selectedConf = configs.size() - 1;
+            }
 
             showGenerationConfig(selectedConf);
         }

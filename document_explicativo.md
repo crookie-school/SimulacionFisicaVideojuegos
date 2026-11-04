@@ -1,10 +1,10 @@
 # Documento explicativo - Proyecto Intermedio
 
 ---
-
 #### Adrián Isasi Martínez
 
-NOTA: El documento está escrito en *markdown* (.md), es un formato légible sin previsualizador, pero hay aplicaciones que muestran el texto más bonito.
+>[!NOTE] El documento está escrito en *markdown* (.md), es un formato légible sin previsualizador, pero hay aplicaciones que muestran el texto más bonito. 
+> Mi intención es subir un .pdf a la entrega, pero si no, esto se puede leer desde GitHub fácilmente (https://github.com/crookie-school/SimulacionFisicaVideojuegos/blob/main/document_explicativo.md).
 
 
 ## Instrucciones para ejecutar
@@ -25,16 +25,16 @@ Este código se puede ignorar, no afecta en nada a la simulación, es solo para 
 El uso debería ser intuitivo, hay un panel principal arriba que incluye un desplegable para cambiar de escenas, la escena actual y el framerate.
 En cada escena saldrá un panel pertinente en el que se pueden modificar los atributos de la escena.
 
-*Escena 1*: La interfaz permite seleccionar un proyectil y configurarlo. Además se pueden crear nuevos proyectles o borrar los proyectiles que no queramos.
+***Escena 1***: La interfaz permite seleccionar un proyectil y configurarlo. Además se pueden crear nuevos proyectles o borrar los proyectiles que no queramos.
 
-*Escena 2*: La interfaz permite generar un número de partículas, activar la gravedad, configurar el generador y las propiedades del generador.
+***Escena 2***: La interfaz permite generar un número de partículas, activar la gravedad, configurar el generador y las propiedades del generador.
 La escena 2 tiene muchas opciones bajo los desplegables 'Main generation settings' y 'Children generation settings'.
-'Main generatino settings' contiene la configuración de generación de las partículas padre.
+'Main generatino settings' contiene la configuración de generación de las partículas padre. He puesto que se puedan crear nuevas configuraciones de particulas.
 'Children generation settings' contiene la configuración de generación del las partículas hija, pero solo lo muestra si está activada la generación de hijas al morir ('Spawn children').
 
-*Escena 3*: La interfaz permite modificar el generador de partículas (igual que en la escena 2), activar/desactivar y configurar cada generador de fuerzas. Las opciones de cada cosa están bajo los sus desplegables.
+***Escena 3***: La interfaz permite modificar el generador de partículas (igual que en la escena 2), activar/desactivar y configurar cada generador de fuerzas. Las opciones de cada cosa están bajo los sus desplegables.
 
-*Escena 4*: Esta escena no entra en el proyecto intermedio, pero como la tenía hecha me he visto obligado a ponerle también una interfaz.
+***Escena 4***: Esta escena no entra en el proyecto intermedio, pero como la tenía hecha me he visto obligado a ponerle también una interfaz.
 
 
 ## Teclas disponibles
@@ -43,17 +43,17 @@ Cada escena es una demo de dicha práctica. A continuación se describen las tec
 > [!NOTE] '[<tecla>]' significa que hay que presionar la tecla con el carácter <tecla>.
 
 *Cámara*:
-- Mover: [W] [A] [S] [D]
-- Girar: [Ratón]
+- **Mover**: [W] [A] [S] [D]
+- **Girar**: [Ratón]
 
 *Cambiar de escena*:
-- Escena 1 (demo de práctica 1): [1]
-- Escena 2 (demo de práctica 2): [2]
-- Escena 3 (demo de práctica 3): [3]
-- Escena 4 (demo de práctica 4): [4]
+- **Escena 1** (demo de práctica 1): [1]
+- **Escena 2** (demo de práctica 2): [2]
+- **Escena 3** (demo de práctica 3): [3]
+- **Escena 4** (demo de práctica 4): [4]
 
 *Escena 1*:
-- Disparar: [Espacio]
+- **Disparar**: [Espacio]
 
 
 ## Requisitos de programación
@@ -71,7 +71,7 @@ En ParticleSystem se usa una cola de espera para añadir partículas. Esto se de
 
 **Requisito D.1)** -> "ParticleGenerator.h" 7 - 24,  La configuración de generación del generador está contenida en el struct *ParticleGenerationConfig* que define los atributos usados para generar partículas por el generador. Previamente usaba una partícula como modelo, pero lo cambie a campos libres porque la partícula no tenía todos los atributos necesarios y era mucho menos legible qué era configurable y qué no.
 
-**Requisito D.2)** -> "ParticleGenerator.h" 12 - 13, permite configurar parámetros de generación (como la posición en este caso), y "ParticleGenerator.cpp" 13 - 37 función de ayuda que se usa para conseguir un punto aleatorio según la configuración del usuario. La forma de generación de Cubo usa la distribución que pases, pero la esfera usa siempre la uniforme. El resto de parámetros se puede escoger qué tipo de función usar al crear el objeto generador, pasando como parámetro de construcción la función de números aleatorios ("ParticleGenerator.h" 29)
+**Requisito D.2)** -> "ParticleGenerator.h" 12 - 13, permite configurar parámetros de generación (como la posición en este caso), y "ParticleGenerator.cpp" 13 - 37 función de ayuda que se usa para conseguir un punto aleatorio según la configuración del usuario. Se puede escoger qué tipo de función usar al crear el objeto generador, pasando como parámetro de construcción la función de números aleatorios ("ParticleGenerator.h" 29)
 
 **Requisito D.3)** -> Yo he hecho una implementación distinta (en mi opinión es más claro y desacoplado). En vez de que un sistema de partículas contenga un generador, uno puede indicarle a un generador cualquiera en qué sistema de partículas debe generar partículas. Esto hace que la dependencia entre ambos sea unidireccional y no bidireccional. Además permite que un generador cambie el sistema en el que genera partículas, o la forma en las que las genera sin problemas de referencias. Un ejemplo de implementación es "P2_Scene.h", donde se puede configurar el generador en tiempo real mientras genera partículas para ver el resultado de los cambios.
 
@@ -86,4 +86,4 @@ En ParticleSystem se usa una cola de espera para añadir partículas. Esto se de
 
 ## Requisitos mínimos de ejecución
 1. "P1_Scene.h", la escena 1 permite disparar distintos proyectiles con distintas propiedades y probar con distintas configuraciones. Todos los disparos salen desde la cámara.
-2. "P3_Scene.h", Se puede activar cada generador con teclas distintas, pudiendo tener activos todos, algunos o ningún generador.
+2. "P3_Scene.h", Se puede activar cada generador con la UI, pudiendo tener activos todos, algunos o ningún generador.

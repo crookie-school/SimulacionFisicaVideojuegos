@@ -85,7 +85,7 @@ public:
                 });
             selected = configs.size() - 1;
         }
-
+        ImGui::SameLine();
         if (ImGui::Button("Remove Projectile"))
         {
             configs.erase(configs.begin() + selected);
