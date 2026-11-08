@@ -28,43 +28,27 @@
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 
-#ifndef PHYSX_SNIPPET_RENDER_H
-#define PHYSX_SNIPPET_RENDER_H
+#pragma once
 
 #include "PxPhysicsAPI.h"
-#include "foundation/PxPreprocessor.h"
 
-#if PX_WINDOWS
-#include <windows.h>
-#pragma warning(disable: 4505)
-//#include <glut.h>
-// OpenGL standard headers
-#include <GL/freeglut.h>
-#elif PX_LINUX_FAMILY
-#include <GL/glut.h>
-#elif PX_OSX
-#include <GLUT/glut.h>
-#else
-#error platform not supported.
-#endif
-#include <string>
-
-extern std::string display_text;
-
-namespace Snippets
+class Camera
 {
-void setupDefaultWindow(const char* name);
-void setupDefaultRenderState();
-void setupImGui();
-void releaseImGui();
+public:
+	Camera(const physx::PxVec3& eye, const physx::PxVec3& dir);
 
-void startRender(const physx::PxVec3& cameraEye, const physx::PxVec3& cameraDir, physx::PxReal nearClip = 1.f, physx::PxReal farClip = 10000.f);
-void renderShape(const physx::PxShape& shape, const physx::PxTransform& transform, const physx::PxVec4& color);
-void renderActors(physx::PxRigidActor** actors, const physx::PxU32 numActors, bool shadows = false, const physx::PxVec4 & color = physx::PxVec4(0.0f, 0.75f, 0.0f, 1.0f));
-void finishRender();
-void drawText(const std::string& text, int x, int y);
-}
+	void				handleMouse(int button, int state, int x, int y);
+	bool				handleKey(unsigned char key, int x, int y, float speed = 1.0f);
+	void				handleMotion(int x, int y);
+	void				handleAnalogMove(float x, float y);
 
-#define MAX_NUM_ACTOR_SHAPES 128
-
-#endif //PHYSX_SNIPPET_RENDER_H
+	physx::PxVec3		getEye()	const;
+	physx::PxVec3		getDir()	const;
+	physx::PxTransform	getTransform() const;
+private:
+	physx::PxVec3	mEye;
+	physx::PxVec3	mDir;
+	int				mMouseX;
+	int				mMouseY;
+	bool			mIsMouseDown;
+};

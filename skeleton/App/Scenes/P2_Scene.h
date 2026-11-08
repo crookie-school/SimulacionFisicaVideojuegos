@@ -1,21 +1,18 @@
 #pragma once
-#include "Scene.h"
-#include "RenderUtils.hpp"
+#include "../../Framework/Scene/Scene.h"
 #include <vector>
 #include <iostream>
 #include "ParticleSystem.h"
 #include "ParticleGenerator.h"
 #include "ForceGenerator.h"
-#include "ImGui/imgui.h"
+#include "../../ImGui/imgui.h"
 #include <random>
 
 class P2_Scene :
     public Scene
 {
 public:
-    explicit P2_Scene(std::string name) : Scene(std::move(name)), sys(), gravityFG({0.f, -10.f, 0.f})
-    {
-    }
+    using Scene::Scene;
 
     struct ParticleGenUIConfig
     {
@@ -171,6 +168,12 @@ public:
         ImGui::End();
     }
 
+    void render(Renderer& renderer) override
+    {
+        for (auto it = sys->begin(); it != sys->end(); it++)
+            (*it)->render(renderer);
+    }
+
     // Por si alguna vez quito lo de ImGui
     /*void keyPress(unsigned char key, const physx::PxTransform& camera) override {
         switch (key)
@@ -228,6 +231,6 @@ private:
     int childrenConf = 1;
 
     bool enableGravity = false;
-    GravityForceGenerator gravityFG;
+    GravityForceGenerator gravityFG = GravityForceGenerator({0.f, -10.f, 0.f});
 };
 

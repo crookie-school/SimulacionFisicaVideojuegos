@@ -2,6 +2,7 @@
 
 #include <string>
 #include "PxPhysicsAPI.h"
+#include "../Render/Renderer.h"
 
 // Clase base para las distintas escenas de la aplicación.
 // Provee la interfaz mínima que debe implementar cualquier escena:
@@ -9,7 +10,7 @@
 class Scene {
 public:
     // Construye la escena con un nombre identificador.
-    explicit Scene(std::string name) : m_name(std::move(name)) {}
+    explicit Scene(std::string name, Camera* cam) : m_name(std::move(name)), camera(cam) {}
     virtual ~Scene() = default;
 
     // Inicializa recursos de la escena (físicos, gráficos, datos, ...).
@@ -22,13 +23,15 @@ public:
     // dt: tiempo en segundos transcurrido desde la última actualización.
     virtual void update(double dt) = 0;
 
+    virtual void render(Renderer& renderer) = 0;
+
     virtual void drawGui() {}
 
     // Manejo de pulsación de tecla.
     // Se recibe la tecla pulsada y la transformada de la cámara para
     // permitir respuestas dependientes de la orientación/posición de la cámara.
     // Método opcional que puede ser sobrescrito por escenas que lo necesiten.
-    virtual void keyPress(unsigned char key, const physx::PxTransform& cameraTransform) {}
+    virtual void keyPress(unsigned char key) {}
 
     // Devuelve el nombre identificador de la escena.
     [[nodiscard]] const std::string& getName() const { return m_name; }
@@ -36,4 +39,6 @@ public:
 protected:
     // Nombre de la escena (útil para identificarla en menús o logs).
     std::string m_name;
+
+    Camera* camera;
 };

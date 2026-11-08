@@ -3,7 +3,7 @@
 #include <functional>
 #include "Particle.h"
 #include "ParticleSystem.h"
-#include "ImGui/imgui.h"
+#include "../ImGui/imgui.h"
 
 enum class GeneratorShape {Point, Box, Sphere, Cylinder};
 enum class GeneratorVelType {Independent, Radial};
@@ -19,7 +19,7 @@ struct ParticleGenerationConfig {
 	float meanAliveTime = 2.f, desvAliveTime = 0.f;
 	float meanDamping = 0.99f, desvDamping = 0.f;
 
-	Vector4 meanColor = { 1.f, 1.f, 1.f, 1.f }, desvColor = { 0.f, 0.f, 0.f, 0.f };
+	physx::PxVec4 meanColor = { 1.f, 1.f, 1.f, 1.f }, desvColor = { 0.f, 0.f, 0.f, 0.f };
 
 	std::function<void(Particle*)> onDeathCallback = std::function<void(Particle*)>(nullptr);
 
@@ -102,8 +102,8 @@ public:
 	void setVelocity(const Vector3D& vel) { _config.meanVel = vel; }
 	Vector3D getVelocity() const { return _config.meanVel; }
 
-	void setColor(const Vector4& col) { _config.meanColor = col; }
-	Vector4 getColor() const { return _config.meanColor; }
+	void setColor(const physx::PxVec4& col) { _config.meanColor = col; }
+	physx::PxVec4 getColor() const { return _config.meanColor; }
 
 	void setConfig(const ParticleGenerationConfig& config) { _config = config; }
 
@@ -142,9 +142,9 @@ private:
 		};
 	}
 
-	Vector4 randVector(const Vector4& mean, const Vector4& desv)
+	physx::PxVec4 randVector(const physx::PxVec4& mean, const physx::PxVec4& desv)
 	{
-		return Vector4{
+		return physx::PxVec4{
 			mean.x + _dist(_mt) * desv.x,
 			mean.y + _dist(_mt) * desv.y,
 			mean.z + _dist(_mt) * desv.z,

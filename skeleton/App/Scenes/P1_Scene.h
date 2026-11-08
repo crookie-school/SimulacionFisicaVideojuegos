@@ -1,16 +1,17 @@
 #pragma once
-#include "Scene.h"
-#include "RenderUtils.hpp"
+#include "../../Framework/Scene/Scene.h"
 #include <vector>
 #include <iostream>
 #include "Projectile.h"
-#include "ImGui/imgui.h"
+#include "../../ImGui/imgui.h"
 
 class P1_Scene :
     public Scene
 {
 public:
-    explicit P1_Scene(std::string name) : Scene(std::move(name))
+    using Scene::Scene;
+
+    explicit P1_Scene(std::string name, Camera* cam) : Scene(std::move(name), cam)
     {}
 
     void init() override {
@@ -99,14 +100,19 @@ public:
         ImGui::End();
     }
 
-    void shoot(const ProjectileConfig& conf)
+    void render(Renderer& renderer) override
     {
-        Vector3D shootDir = GetCamera()->getDir().getNormalized();
-        physx::PxTransform camera = GetCamera()->getTransform();
-        particles.push_back(new Projectile(camera.p, shootDir, conf.realVel, conf.simVel, conf.mass, conf.color));
+        for (Particle* p : particles) 
+            p->render(renderer);
     }
 
-    void keyPress(unsigned char key, const physx::PxTransform& camera) override
+    void shoot(const ProjectileConfig& conf)
+    {
+        Vector3D shootDir = camera->getDir();
+        particles.push_back(new Projectile(camera->getEye(), shootDir, conf.realVel, conf.simVel, conf.mass, conf.color));
+    }
+
+    void keyPress(unsigned char key) override
     {
         if (key == ' ') shoot(configs[selected]);
     }

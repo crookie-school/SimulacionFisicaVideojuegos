@@ -1,9 +1,9 @@
 #pragma once
 
-#include "core.hpp"
-#include "Vector3D.h"
-#include "RenderUtils.hpp"
+#include "../Framework/Vector3D.h"
 #include <functional>
+#include <PxPhysicsAPI.h>
+#include "../Framework/Render/Renderer.h"
 
 class RenderItem;
 class ParticleGenerator;
@@ -12,7 +12,7 @@ class Particle
 {
 public:
 	Particle();
-	Particle(const Vector3D& Pos, float mass, float aliveTime, const Vector4& color = {1.f, 1.f, 1.f, 1.f}, physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(1.f), nullptr));
+	Particle(const Vector3D& Pos, float mass, float aliveTime, const physx::PxVec4& color = {1.f, 1.f, 1.f, 1.f}, const physx::PxGeometryHolder& geom = physx::PxSphereGeometry(1.f));
 	Particle(const Particle& other);
 	Particle& operator=(const Particle& other);
 	virtual ~Particle();
@@ -20,6 +20,8 @@ public:
 	virtual void integrateEuler(double t);
 	virtual void integrateEulerSemi(double t);
 	virtual void integrateVerlet(double t);
+
+	void render(Renderer& renderer);
 
 	bool isAlive() const { return aliveTime > 0; }
 	float getLifeTime() const { return aliveTime; }
@@ -37,16 +39,16 @@ public:
 	Vector3D getAcc() const { return acc; }
 	Vector3D getPos() const { return pose.p; }
 
-	void setColor(const Vector4& col);
-	Vector4 getColor() const;
+	void setColor(const physx::PxVec4& col);
+	physx::PxVec4 getColor() const;
 
 	void setOnDeathCallback(std::function<void(Particle*)> callback);
 	void die() { 
 		if(onDeath) onDeath(this); 
 	}
 
-	void addForce(const Vector3& force) { forceAcc += force; }
-	void clearForces() { forceAcc = { 0.f, 0.f, 0.f }; }
+	void addForce(const Vector3D& force) { forceAcc += force; }
+	void clearForces() { forceAcc = Vector3D{ 0.f, 0.f, 0.f }; }
 
 protected:
 	float inverseMass;
@@ -54,7 +56,9 @@ protected:
 	Vector3D acc;
 	physx::PxTransform pose;
 	RenderItem* renderItem;
-	Vector3 forceAcc;
+	Vector3D forceAcc;
+	physx::PxVec4 color;
+	physx::PxGeometryHolder geom;
 
 	// Verlet integration
 	Vector3D lastPos;

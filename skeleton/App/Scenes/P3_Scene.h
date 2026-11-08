@@ -1,6 +1,5 @@
 #pragma once
-#include "Scene.h"
-#include "RenderUtils.hpp"
+#include "../../Framework/Scene/Scene.h"
 #include <vector>
 #include <iostream>
 #include "Particle.h"
@@ -12,10 +11,7 @@ class P3_Scene :
     public Scene
 {
 public:
-    explicit P3_Scene(std::string name) : Scene(std::move(name)),
-        AOEorigin({0.f, 0.f, 0.f})
-    {
-    }
+    using Scene::Scene;
 
     void init() override
     {
@@ -48,18 +44,11 @@ public:
         gen->setEmitting(true);
 
 
-        // Crea una caja con lineas para ver el area de efecto claramente (me lo enseñó un compañero)
-        physx::PxShape* shape = CreateShape(physx::PxBoxGeometry(AOEsize / 2.f));
-        shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
-        shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-        AOEDebugBox = new RenderItem(shape, &AOEorigin, { 0.f, 0.f, 0.f, 1.f });
-
-
         // Creamos los generadores
         gravityFG = new GravityForceGenerator({0.f, -10.f, 0.f});
         windFG = new WindForceGenerator(0.4f, { 100.f, 0.f, 0.f }, AOEorigin.p - AOEsize / 2.f, AOEsize);
         tornadoFG = new TornadoForceGenerator(10.f, 2.f, 0.4f, AOEorigin.p - AOEsize / 2.f, AOEsize);
-        explosionFG = new ExplosionForceGenerator(AOEorigin.p, 100000.f, AOEsize.magnitudeSquared(), 0.05f);
+        explosionFG = new ExplosionForceGenerator(AOEorigin.p, 100000.f, AOEsize.magnitudeSqr(), 0.05f);
     }
 
     void drawGui() override
@@ -122,11 +111,19 @@ public:
         sys->update(dt);
     }
 
+    void render(Renderer& renderer) override
+    {
+        for (auto it = sys->begin(); it != sys->end(); it++)
+            (*it)->render(renderer);
+
+        // Draw AOE Box
+        renderer.renderShape(physx::PxBoxGeometry(AOEsize/2.f), physx::PxTransform(AOEorigin), { 0.f, 0.f, 0.f, 0.1f }); // alpha < 1.f se pone con wireframe (es asi como estaba el codigo de render antes)
+    }
+
     void cleanup() override
     {
         delete sys;
         delete gen;
-        AOEDebugBox->release();
 
         delete gravityFG;
         delete windFG;
@@ -140,9 +137,8 @@ private:
     ParticleGenerator* gen;
 
     // Caja para visualizar el AOE (Area of effect)
-    physx::PxTransform AOEorigin;
-    Vector3 AOEsize = { 80, 80, 80 };
-    RenderItem* AOEDebugBox;
+    physx::PxTransform AOEorigin = physx::PxTransform({ 0.f, 0.f, 0.f });
+    Vector3D AOEsize = { 80, 80, 80 };
 
     // Generadores de fuerzas
     bool enableGravity = false;

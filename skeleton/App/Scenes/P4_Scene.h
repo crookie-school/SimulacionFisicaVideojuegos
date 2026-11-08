@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene.h"
+#include "../../Framework/Scene/Scene.h"
 #include <vector>
 #include <iostream>
 
@@ -7,9 +7,7 @@ class P4_Scene :
     public Scene
 {
 public:
-    explicit P4_Scene(std::string name) : Scene(std::move(name))
-    {
-    }
+    using Scene::Scene;
 
     void init() override
     {
@@ -24,7 +22,7 @@ public:
         p3 = new Particle({ -10.0,20.0,0.0 }, 1, 99999);
         f3 = new AnchoredSpringFG(5, 10, { 10.0,20.0,0.0 });
 
-        p4 = new Particle({ 0.f, -5.f, 0.f }, 500.f, 999999, {0.8f, 0.6f, 0.2f, 1.f}, CreateShape(physx::PxBoxGeometry(1.f, 2.f, 1.f)));
+        p4 = new Particle({ 0.f, -5.f, 0.f }, 500.f, 999999, {0.8f, 0.6f, 0.2f, 1.f}, physx::PxBoxGeometry(1.f, 2.f, 1.f));
         f4 = new BouyancyForceGenerator(0.f, 1.f, 1000);
 
         g = new GravityForceGenerator({ 0.f, -10.f, 0.f });
@@ -89,6 +87,16 @@ public:
 
 
         ImGui::End();
+    }
+
+    void render(Renderer& renderer) override
+    {
+        p1->render(renderer);
+        p2->render(renderer);
+        p3->render(renderer);
+        p4->render(renderer);
+        f3->renderAnchor(renderer);
+        f4->renderWater(renderer);
     }
 
     void cleanup() override

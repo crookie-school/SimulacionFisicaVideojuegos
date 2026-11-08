@@ -85,6 +85,11 @@ public:
 	{
 		return Vector3D(_x * scalar, _y * scalar, _z * scalar);
 	}
+	Vector3D operator/ (float scalar) const noexcept
+	{
+		assert(scalar != 0 && "Division by zero");
+		return Vector3D(_x / scalar, _y / scalar, _z / scalar);
+	}
 	Vector3D& operator+=(const Vector3D& o) noexcept { 
 		_x += o._x; _y += o._y; _z += o._z; 
 		return *this; 
