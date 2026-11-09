@@ -16,12 +16,31 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 class Physics : public physx::PxSimulationEventCallback
 {
 public:
-	Physics();
-	~Physics();
+	Physics(const Physics&) = delete;
+	Physics& operator=(const Physics&) = delete;
+	Physics(Physics&&) = delete;
+	Physics& operator=(Physics&&) = delete;
+
+
+	static Physics& get()
+	{
+		static Physics instance;
+		return instance;
+	}
 
 	void stepPhysics(double dt);
 
+	physx::PxRigidDynamic* createDynamicRigidbody(const physx::PxTransform& transform);
+	physx::PxRigidStatic* createStaticRigidbody(const physx::PxTransform& transform);
+
+	physx::PxShape* createShape(const physx::PxGeometry& geom, physx::PxMaterial* mat);
+	physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
+
+	bool raycast(const physx::PxVec3& origin, const physx::PxVec3& dir, float maxDistance, physx::PxRaycastBuffer& hitData);
+
 private:
+	Physics();
+	~Physics();
 
 	void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
 	void onWake(physx::PxActor** actors, physx::PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }

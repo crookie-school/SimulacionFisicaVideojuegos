@@ -1,21 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Render\Camera.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Render.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="callbacks.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="Particle.cpp" />
-    <ClCompile Include="Projectile.cpp" />
-    <ClCompile Include="ParticleSystem.cpp" />
-    <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -23,31 +9,21 @@
     <ClCompile Include="ImGui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Framework\BaseApplication.cpp" />
+    <ClCompile Include="App\Particle.cpp" />
+    <ClCompile Include="App\ParticleGenerator.cpp" />
+    <ClCompile Include="App\ParticleSystem.cpp" />
+    <ClCompile Include="Framework\Physics.cpp" />
+    <ClCompile Include="App\Projectile.cpp" />
+    <ClCompile Include="Framework\Render\Renderer.cpp" />
+    <ClCompile Include="Framework\Render\Camera.cpp" />
+    <ClCompile Include="Framework\Scene\Scene.cpp" />
+    <ClCompile Include="Framework\Scene\SceneManager.cpp" />
+    <ClCompile Include="Framework\Window.cpp" />
+    <ClCompile Include="App\SIMApp.cpp" />
+    <ClCompile Include="App\Vehicle\Wheel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="core.hpp" />
-    <ClInclude Include="Render\Camera.h">
-      <Filter>Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Render.h">
-      <Filter>Render</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderUtils.hpp" />
-    <ClInclude Include="callbacks.hpp" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="EmptyScene.h" />
-    <ClInclude Include="Vector3D.h" />
-    <ClInclude Include="P0_Scene.h" />
-    <ClInclude Include="Particle.h" />
-    <ClInclude Include="P1_Scene.h" />
-    <ClInclude Include="Projectile.h" />
-    <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="ParticleGenerator.h" />
-    <ClInclude Include="P2_Scene.h" />
-    <ClInclude Include="P3_Scene.h" />
-    <ClInclude Include="ForceGenerator.h" />
-    <ClInclude Include="P4_Scene.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_glut.h" />
@@ -57,6 +33,27 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="Framework\BaseApplication.h" />
+    <ClInclude Include="App\Scenes\EmptyScene.h" />
+    <ClInclude Include="App\ForceGenerator.h" />
+    <ClInclude Include="App\Scenes\P1_Scene.h" />
+    <ClInclude Include="App\Scenes\P2_Scene.h" />
+    <ClInclude Include="App\Scenes\P3_Scene.h" />
+    <ClInclude Include="App\Scenes\P4_Scene.h" />
+    <ClInclude Include="App\Particle.h" />
+    <ClInclude Include="App\ParticleGenerator.h" />
+    <ClInclude Include="App\ParticleSystem.h" />
+    <ClInclude Include="Framework\Physics.h" />
+    <ClInclude Include="App\Projectile.h" />
+    <ClInclude Include="Framework\Render\Renderer.h" />
+    <ClInclude Include="Framework\Render\Camera.h" />
+    <ClInclude Include="Framework\Scene\Scene.h" />
+    <ClInclude Include="Framework\Scene\SceneManager.h" />
+    <ClInclude Include="Framework\Vector3D.h" />
+    <ClInclude Include="Framework\Window.h" />
+    <ClInclude Include="App\SIMApp.h" />
+    <ClInclude Include="App\Scenes\ProyectoFinal_Scene.h" />
+    <ClInclude Include="App\Vehicle\Wheel.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

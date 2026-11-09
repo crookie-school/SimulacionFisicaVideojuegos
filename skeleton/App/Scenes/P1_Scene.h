@@ -100,10 +100,10 @@ public:
         ImGui::End();
     }
 
-    void render(Renderer& renderer) override
+    void render() override
     {
         for (Particle* p : particles) 
-            p->render(renderer);
+            p->render();
     }
 
     void shoot(const ProjectileConfig& conf)

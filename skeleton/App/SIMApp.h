@@ -7,6 +7,7 @@
 #include "Scenes/P2_Scene.h"
 #include "Scenes/P3_Scene.h"
 #include "Scenes/P4_Scene.h"
+#include "Scenes/ProyectoFinal_Scene.h"
 
 class SIMApp : public BaseApplication
 {
@@ -18,6 +19,7 @@ public:
 		sceneManager.registerScene<P2_Scene>("P2_Scene");
 		sceneManager.registerScene<P3_Scene>("P3_Scene");
 		sceneManager.registerScene<P4_Scene>("P4_Scene");
+		sceneManager.registerScene<ProyectoFinal_Scene>("ProyectoFinal_Scene");
 
         sceneManager.changeScene("EmptyScene");
 	}
@@ -37,6 +39,7 @@ public:
                 if (ImGui::MenuItem("P2"))     sceneManager.changeScene("P2_Scene");
                 if (ImGui::MenuItem("P3"))     sceneManager.changeScene("P3_Scene");
                 if (ImGui::MenuItem("P4"))     sceneManager.changeScene("P4_Scene");
+                if (ImGui::MenuItem("Proyecto Final"))     sceneManager.changeScene("ProyectoFinal_Scene");
                 ImGui::EndMenu();
             }
 
@@ -88,6 +91,11 @@ public:
         if (key == '4')
         {
             sceneManager.changeScene("P4_Scene");
+            return;
+        }
+        if (key == '0')
+        {
+            sceneManager.changeScene("ProyectoFinal_Scene");
             return;
         }
 	}

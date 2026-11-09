@@ -77,52 +77,49 @@ void Renderer::renderShape(const PxGeometryHolder& shape, const PxTransform& tra
 	assert(glGetError() == GL_NO_ERROR);
 }
 
-void Renderer::renderActors(PxRigidActor** actors, const PxU32 numActors, bool shadows, const PxVec4& color)
+void Renderer::renderActor(PxRigidActor* actor, bool shadows, const PxVec4& color)
 {
 	PxShape* shapes[MAX_NUM_ACTOR_SHAPES];
-	for (PxU32 i = 0; i < numActors; i++)
+	const PxU32 nbShapes = actor->getNbShapes();
+	PX_ASSERT(nbShapes <= MAX_NUM_ACTOR_SHAPES);
+	actor->getShapes(shapes, nbShapes);
+	bool sleeping = actor->is<PxRigidDynamic>() ? actor->is<PxRigidDynamic>()->isSleeping() : false;
+
+	for (PxU32 j = 0; j < nbShapes; j++)
 	{
-		const PxU32 nbShapes = actors[i]->getNbShapes();
-		PX_ASSERT(nbShapes <= MAX_NUM_ACTOR_SHAPES);
-		actors[i]->getShapes(shapes, nbShapes);
-		bool sleeping = actors[i]->is<PxRigidDynamic>() ? actors[i]->is<PxRigidDynamic>()->isSleeping() : false;
+		const PxMat44 shapePose(PxShapeExt::getGlobalPose(*shapes[j], *actor));
+		PxGeometryHolder h = shapes[j]->getGeometry();
 
-		for (PxU32 j = 0; j < nbShapes; j++)
+		if (shapes[j]->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		// render object
+		glPushMatrix();
+		glMultMatrixf(reinterpret_cast<const float*>(&shapePose));
+		if (sleeping)
 		{
-			const PxMat44 shapePose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
-			PxGeometryHolder h = shapes[j]->getGeometry();
+			PxVec4 darkColor = color * 0.25f;
+			glColor4f(darkColor.x, darkColor.y, darkColor.z, 1.0f);
+		}
+		else
+			glColor4f(color.x, color.y, color.z, 1.0f);
+		renderGeometry(h, color.w < 0.999f);
+		glPopMatrix();
 
-			if (shapes[j]->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-			// render object
+		if (shadows)
+		{
+			const PxVec3 shadowDir(0.0f, -0.7071067f, -0.7071067f);
+			const PxReal shadowMat[] = { 1,0,0,0, -shadowDir.x / shadowDir.y,0,-shadowDir.z / shadowDir.y,0, 0,0,1,0, 0,0,0,1 };
 			glPushMatrix();
+			glMultMatrixf(shadowMat);
 			glMultMatrixf(reinterpret_cast<const float*>(&shapePose));
-			if (sleeping)
-			{
-				PxVec4 darkColor = color * 0.25f;
-				glColor4f(darkColor.x, darkColor.y, darkColor.z, 1.0f);
-			}
-			else
-				glColor4f(color.x, color.y, color.z, 1.0f);
-			renderGeometry(h, color.w < 0.999f);
+			glDisable(GL_LIGHTING);
+			glColor4f(0.1f, 0.2f, 0.3f, 1.0f);
+			renderGeometry(h);
+			glEnable(GL_LIGHTING);
 			glPopMatrix();
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-			if (shadows)
-			{
-				const PxVec3 shadowDir(0.0f, -0.7071067f, -0.7071067f);
-				const PxReal shadowMat[] = { 1,0,0,0, -shadowDir.x / shadowDir.y,0,-shadowDir.z / shadowDir.y,0, 0,0,1,0, 0,0,0,1 };
-				glPushMatrix();
-				glMultMatrixf(shadowMat);
-				glMultMatrixf(reinterpret_cast<const float*>(&shapePose));
-				glDisable(GL_LIGHTING);
-				glColor4f(0.1f, 0.2f, 0.3f, 1.0f);
-				renderGeometry(h);
-				glEnable(GL_LIGHTING);
-				glPopMatrix();
-			}
 		}
 	}
 }
@@ -326,10 +323,21 @@ void Renderer::renderGeometry(const PxGeometryHolder& h, bool wireframe)
 		glPopMatrix();
 	}
 	break;
+	case PxGeometryType::ePLANE: {
+		const float s = 500.0f; // tamaño del "suelo" visible
+		glDisable(GL_CULL_FACE);
+		glBegin(GL_QUADS);
+		glNormal3f(1.0f, 0.0f, 0.0f);
+		glVertex3f(0.0f, -s, -s);
+		glVertex3f(0.0f, -s, s);
+		glVertex3f(0.0f, s, s);
+		glVertex3f(0.0f, s, -s);
+		glEnd();
+	}
+	break;
 	case PxGeometryType::eINVALID:
 	case PxGeometryType::eHEIGHTFIELD:
 	case PxGeometryType::eGEOMETRY_COUNT:
-	case PxGeometryType::ePLANE:
 		break;
 	}
 }

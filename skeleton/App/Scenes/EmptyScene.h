@@ -14,7 +14,7 @@ public:
         //m_transform.p.y -= static_cast<float>(9.8 * dt);
     }
 
-    void render(Renderer& renderer) override {}
+    void render() override {}
 
     void cleanup() override {
     }

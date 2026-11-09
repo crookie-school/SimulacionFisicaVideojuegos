@@ -1,5 +1,8 @@
 #include "BaseApplication.h"
 
+#include "Physics.h"
+#include "Render/Renderer.h"
+
 #include <chrono>
 
 BaseApplication::BaseApplication(const ApplicationDesc& desc) :
@@ -37,24 +40,24 @@ void BaseApplication::run()
 
 			sceneManager.update(fixedTimestep);
 
-			physicsEngine.stepPhysics(fixedTimestep);
+			Physics::get().stepPhysics(fixedTimestep);
 
 			physicsTimeAccumulator -= fixedTimestep;
 		}
 
-		renderer.beginRender(camera);
+		Renderer::get().beginRender(camera);
 
-		sceneManager.render(renderer);
+		sceneManager.render();
 		sceneManager.drawGui();
 		this->drawAppUI();
 
-		renderer.finishRender();
+		Renderer::get().finishRender();
 	}
 }
 
 void BaseApplication::onResize(int w, int h)
 {
-	renderer.resize(w, h);
+	Renderer::get().resize(w, h);
 }
 
 void BaseApplication::onClose()

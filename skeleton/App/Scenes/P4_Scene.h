@@ -89,14 +89,14 @@ public:
         ImGui::End();
     }
 
-    void render(Renderer& renderer) override
+    void render() override
     {
-        p1->render(renderer);
-        p2->render(renderer);
-        p3->render(renderer);
-        p4->render(renderer);
-        f3->renderAnchor(renderer);
-        f4->renderWater(renderer);
+        p1->render();
+        p2->render();
+        p3->render();
+        p4->render();
+        f3->renderAnchor();
+        f4->renderWater();
     }
 
     void cleanup() override

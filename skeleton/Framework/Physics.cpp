@@ -125,6 +125,35 @@ void Physics::stepPhysics(double dt)
 	scene->fetchResults(true);
 }
 
+physx::PxRigidDynamic* Physics::createDynamicRigidbody(const physx::PxTransform& transform)
+{
+	PxRigidDynamic* dyn = physics->createRigidDynamic(transform);
+	scene->addActor(*dyn);
+	return dyn;
+}
+
+physx::PxRigidStatic* Physics::createStaticRigidbody(const physx::PxTransform& transform)
+{
+	PxRigidStatic* sta = physics->createRigidStatic(transform);
+	scene->addActor(*sta);
+	return sta;
+}
+
+physx::PxShape* Physics::createShape(const physx::PxGeometry& geom, physx::PxMaterial* mat)
+{
+	return physics->createShape(geom, *mat);
+}
+
+physx::PxMaterial* Physics::createMaterial(float staticFriction, float dynamicFriction, float restitution)
+{
+	return physics->createMaterial(staticFriction, dynamicFriction, restitution);
+}
+
+bool Physics::raycast(const physx::PxVec3& origin, const physx::PxVec3& dir, float maxDistance, physx::PxRaycastBuffer& hitData)
+{
+	return scene->raycast(origin, dir, maxDistance, hitData);
+}
+
 void Physics::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
 {
 	PX_UNUSED(pairs);

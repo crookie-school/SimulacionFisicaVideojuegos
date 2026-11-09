@@ -2,9 +2,10 @@
 #include "../../Framework/Scene/Scene.h"
 #include <vector>
 #include <iostream>
-#include "Particle.h"
-#include "ForceGenerator.h"
-#include "ParticleGenerator.h"
+#include "../Particle.h"
+#include "../ForceGenerator.h"
+#include "../ParticleGenerator.h"
+#include "../../Framework/Render/Renderer.h"
 #include <random>
 
 class P3_Scene :
@@ -111,13 +112,13 @@ public:
         sys->update(dt);
     }
 
-    void render(Renderer& renderer) override
+    void render() override
     {
         for (auto it = sys->begin(); it != sys->end(); it++)
-            (*it)->render(renderer);
+            (*it)->render();
 
         // Draw AOE Box
-        renderer.renderShape(physx::PxBoxGeometry(AOEsize/2.f), physx::PxTransform(AOEorigin), { 0.f, 0.f, 0.f, 0.1f }); // alpha < 1.f se pone con wireframe (es asi como estaba el codigo de render antes)
+        Renderer::get().renderShape(physx::PxBoxGeometry(AOEsize / 2.f), physx::PxTransform(AOEorigin), {0.f, 0.f, 0.f, 0.1f}); // alpha < 1.f se pone con wireframe (es asi como estaba el codigo de render antes)
     }
 
     void cleanup() override

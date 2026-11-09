@@ -1,6 +1,7 @@
 #include "Particle.h"
 
 #include <cmath>
+#include "../Framework/Render/Renderer.h"
 
 Particle::Particle()
 	:inverseMass(1.f), pose(0.f, 0.f, 0.f), acc(0.f, 0.f, 0.f), forceAcc(0.f, 0.f, 0.f), lastPos(pose.p), aliveTime(0), damping(0.99f), geom(physx::PxSphereGeometry(1.f))
@@ -98,9 +99,9 @@ void Particle::integrateVerlet(double t)
 	clearForces();
 }
 
-void Particle::render(Renderer& renderer)
+void Particle::render()
 {
-	renderer.renderShape(geom, pose, color);
+	Renderer::get().renderShape(geom, pose, color);
 }
 
 void Particle::setColor(const physx::PxVec4& col) { color = col; }

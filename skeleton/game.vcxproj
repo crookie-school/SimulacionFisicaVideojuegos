@@ -281,8 +281,10 @@
     <ClCompile Include="Framework\Scene\SceneManager.cpp" />
     <ClCompile Include="Framework\Window.cpp" />
     <ClCompile Include="App\SIMApp.cpp" />
+    <ClCompile Include="App\Vehicle\Wheel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\Scenes\ProyectoFinal_Scene.h" />
     <ClInclude Include="Framework\BaseApplication.h" />
     <ClInclude Include="App\Scenes\EmptyScene.h" />
     <ClInclude Include="App\ForceGenerator.h" />
@@ -311,6 +313,7 @@
     <ClInclude Include="Framework\Vector3D.h" />
     <ClInclude Include="Framework\Window.h" />
     <ClInclude Include="App\SIMApp.h" />
+    <ClInclude Include="App\Vehicle\Wheel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

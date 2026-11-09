@@ -107,6 +107,21 @@ PxTransform Camera::getTransform() const
 	return PxTransform(mEye, PxQuat(m));
 }
 
+void Camera::setEye(const physx::PxVec3& eye)
+{
+	mEye = eye;
+}
+
+void Camera::setDir(const physx::PxVec3& dir)
+{
+	mDir = dir;
+}
+
+void Camera::setCameraPosition(const physx::PxVec3& eye, const physx::PxVec3& dir)
+{
+	setEye(eye); setDir(dir);
+}
+
 PxVec3 Camera::getEye() const
 { 
 	return mEye; 

@@ -2,7 +2,7 @@
 
 #include <string>
 #include "PxPhysicsAPI.h"
-#include "../Render/Renderer.h"
+#include "../Render/Camera.h"
 
 // Clase base para las distintas escenas de la aplicación.
 // Provee la interfaz mínima que debe implementar cualquier escena:
@@ -23,7 +23,7 @@ public:
     // dt: tiempo en segundos transcurrido desde la última actualización.
     virtual void update(double dt) = 0;
 
-    virtual void render(Renderer& renderer) = 0;
+    virtual void render() = 0;
 
     virtual void drawGui() {}
 

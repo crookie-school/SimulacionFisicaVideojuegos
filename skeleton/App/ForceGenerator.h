@@ -3,6 +3,7 @@
 #include "../Framework/Vector3D.h"
 #include "Particle.h"
 #include "ParticleSystem.h"
+#include "../ImGui/imgui.h"
 #include <limits>
 #include <algorithm>
 
@@ -280,9 +281,9 @@ public:
 		ImGui::EndGroup();
 	}
 
-	void renderAnchor(Renderer& renderer)
+	void renderAnchor()
 	{
-		other->render(renderer);
+		other->render();
 	}
 
 	~AnchoredSpringFG()
@@ -316,9 +317,9 @@ public:
 		p->addForce(f);
 	}
 
-	void renderWater(Renderer& renderer)
+	void renderWater()
 	{
-		liquidParticle->render(renderer);
+		liquidParticle->render();
 	}
 
 	void showUI() override

@@ -64,7 +64,7 @@ void SceneManager::drawGui() {
     if (m_currentScene) m_currentScene->drawGui(); 
 }
 
-void SceneManager::render(Renderer& renderer)
+void SceneManager::render()
 {
-    if (m_currentScene) m_currentScene->render(renderer);
+    if (m_currentScene) m_currentScene->render();
 }

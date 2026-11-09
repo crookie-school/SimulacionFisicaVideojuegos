@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "../Window.h"
+#include "../Render/Camera.h"
 #include <memory>
 #include <unordered_map>
 #include <string>
@@ -32,7 +33,7 @@ public:
 
     void drawGui();
 
-    void render(Renderer& renderer);
+    void render();
 
     // Inherited via IInputEventListener
     void onKeyDown(unsigned char k) override;

@@ -1,10 +1,8 @@
 #pragma once
 
-
 #include "Scene/SceneManager.h"
+#include "Render/Camera.h"
 #include "Window.h"
-#include "Render/Renderer.h"
-#include "Physics.h"
 
 struct ApplicationDesc
 {
@@ -32,10 +30,8 @@ protected:
 	float physicsTimeAccumulator = 0.0;
 	float fixedTimestep;
 	Window window;
-	Renderer renderer;
 	SceneManager sceneManager;
 	Camera camera;
-	Physics physicsEngine;
 
 	virtual void drawAppUI();
 

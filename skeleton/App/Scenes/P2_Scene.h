@@ -168,10 +168,10 @@ public:
         ImGui::End();
     }
 
-    void render(Renderer& renderer) override
+    void render() override
     {
         for (auto it = sys->begin(); it != sys->end(); it++)
-            (*it)->render(renderer);
+            (*it)->render();
     }
 
     // Por si alguna vez quito lo de ImGui

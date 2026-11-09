@@ -3,7 +3,6 @@
 #include "../Framework/Vector3D.h"
 #include <functional>
 #include <PxPhysicsAPI.h>
-#include "../Framework/Render/Renderer.h"
 
 class RenderItem;
 class ParticleGenerator;
@@ -21,7 +20,7 @@ public:
 	virtual void integrateEulerSemi(double t);
 	virtual void integrateVerlet(double t);
 
-	void render(Renderer& renderer);
+	void render();
 
 	bool isAlive() const { return aliveTime > 0; }
 	float getLifeTime() const { return aliveTime; }
