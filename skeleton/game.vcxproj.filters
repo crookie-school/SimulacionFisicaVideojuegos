@@ -22,6 +22,7 @@
     <ClCompile Include="Framework\Window.cpp" />
     <ClCompile Include="App\SIMApp.cpp" />
     <ClCompile Include="App\Vehicle\Wheel.cpp" />
+    <ClCompile Include="App\Vehicle\Car.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -54,6 +55,7 @@
     <ClInclude Include="App\SIMApp.h" />
     <ClInclude Include="App\Scenes\ProyectoFinal_Scene.h" />
     <ClInclude Include="App\Vehicle\Wheel.h" />
+    <ClInclude Include="App\Vehicle\Car.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

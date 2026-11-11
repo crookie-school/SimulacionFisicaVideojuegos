@@ -2,71 +2,56 @@
 
 #include "../../Framework/Physics.h"
 #include "../../Framework/Render/Renderer.h"
+#include <iostream>
+#include <vector>
+
+struct WheelDesc
+{
+	physx::PxVec3 wheelMountPoint, forwardDir;
+	float wheelRadius, 
+		suspRestLength, 
+		suspStiffness, 
+		suspDamping,
+		rollResistance, // Resistencia al rodamiento
+		tiresFrictionCoeff; // Newtons de agarre por Newtons de peso sobre la rueda
+};
 
 class Wheel
 {
 public:
-	Wheel(PxRigidDynamic* vehicleBody, const physx::PxVec3& mountPoint, float rad, float suspRestLength, float suspStiffness, float suspDamping) :
-		vehicleBody(vehicleBody), 
-		mountPoint(mountPoint),
-		wheelRadius(rad), 
-		restLength(suspRestLength), 
-		stiffness(suspStiffness), 
-		damping(suspDamping),
-		suspensionLength(restLength)
-	{
-
-	}
+	Wheel(PxRigidDynamic* vehicleBody, const WheelDesc& desc);
 
 	void setMountPoint(physx::PxVec3 mount) { mountPoint = mount; }
 
-	void update(float dt)
-	{
-		// Posicion de origen de la rueda (global)
-		physx::PxVec3 origin = vehicleBody->getGlobalPose().transform(mountPoint);
+	void applyTorque(float torque);
 
-		float raycastLenth = wheelRadius + restLength;
-		physx::PxRaycastBuffer hitData;
-		grounded = Physics::get().raycast(origin, { 0.f, -1.f, 0.f }, raycastLenth, hitData);
+	void setSteer(float degrees) { steer = degrees; }
 
-		if (!grounded)
-		{
-			wasGrounded = false;
-			suspensionLength = restLength;
-			return;
-		}
+	void update(float dt);
 
-		float compression = raycastLenth - hitData.block.distance;
-		suspensionLength = std::fmin(std::fmax(hitData.block.distance - wheelRadius, 0.f), restLength);
+	void render();
 
-		if (!wasGrounded) prevCompression = compression;
-		float compressionVel = (compression - prevCompression) / dt;
-		prevCompression = compression;
-		wasGrounded = true;
-
-		// F = k*x + c*v
-		float force = std::fmax(0, stiffness * compression + damping * compressionVel);
-		
-		physx::PxRigidBodyExt::addForceAtPos(*vehicleBody, { 0.f, force, 0.f }, origin);
-	}
-
-	void render()
-	{
-		physx::PxVec3 wheelLocal = mountPoint + physx::PxVec3(0, -suspensionLength, 0);
-		physx::PxTransform wheelGlobPos = vehicleBody->getGlobalPose() * physx::PxTransform(wheelLocal);
-		Renderer::get().renderShape(physx::PxSphereGeometry(wheelRadius), wheelGlobPos, {0.f, 0.f, 0.f, 1.f});
-	}
+	void drawGui();
 
 private:
+
+	void applyForceToCarInMountPoint(const physx::PxVec3& localForce);
+
 	physx::PxRigidDynamic* vehicleBody;
 	physx::PxVec3 mountPoint; // Local al cuerpo del vehiculo
+	physx::PxVec3 forward; // Local al cuerpo del vehiculo
+	float steer = 0.f;
 	float wheelRadius;
+	float rollResistance;
+	float tiresFrictionCoeff;
 	float restLength; // k
 	float stiffness; // k
 	float damping; // c
 	float suspensionLength;
 	float prevCompression = 0.f;
 	bool wasGrounded = false;
-	bool grounded = false;
+
+	// Gui
+	std::vector<float> suspensionLengthSampels;
 };
 

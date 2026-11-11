@@ -6,7 +6,12 @@
 #include <vector>
 #include <iostream>
 
-#include "../Vehicle/Wheel.h"
+#include "../Vehicle/Car.h"
+
+static constexpr int FR_WHEEL = 0;
+static constexpr int FL_WHEEL = 1;
+static constexpr int BR_WHEEL = 2;
+static constexpr int BL_WHEEL = 3;
 
 class ProyectoFinal_Scene :
     public Scene
@@ -16,41 +21,52 @@ public:
 
     void init() override
     {
-        camera->setCameraPosition({ -50.f, 5.f, 0.f }, { 1.f, 0.f, 0.f });
-
+        // suelo
         floorMat = Physics::get().createMaterial(0.2, 0.2, 0.2);
-        floor = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 1.f, 0.f)));
-        physx::PxShape* plane = Physics::get().createShape(physx::PxBoxGeometry(500.f, 0.5f, 500.f), floorMat);
+        floor = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, -0.501f, 0.f)));
+        physx::PxShape* plane = Physics::get().createShape(physx::PxBoxGeometry(50000.f, 0.5f, 50000.f), floorMat);
         plane->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
         floor->attachShape(*plane);
         plane->release();
-        actors.push_back(floor);
 
-        physx::PxMaterial* carMat = Physics::get().createMaterial(0.5, 0.5, 0.5);
-        carBody = Physics::get().createDynamicRigidbody(physx::PxTransform(physx::PxVec3(0.f, 5.f, 0.f)));
-        physx::PxShape* cube = Physics::get().createShape(physx::PxBoxGeometry(0.5, 0.5, 1), carMat);
-        cube->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, false);
-        carBody->attachShape(*cube);
-        cube->release();
+        // Vehiculo
+        WheelDesc wheelDesc;
+        wheelDesc.wheelMountPoint = { 0.5f, -0.3f, 0.8f };
+        wheelDesc.forwardDir = { 0.f, 0.f, -1.f };
+        wheelDesc.wheelRadius = 0.3f;
+        wheelDesc.suspRestLength = 0.5f;
+        wheelDesc.suspStiffness = 20000;
+        wheelDesc.suspDamping = 1000;
+        wheelDesc.tiresFrictionCoeff = 0.5f;
+        wheelDesc.rollResistance = 0.01f;
 
-        physx::PxRigidBodyExt::setMassAndUpdateInertia(*carBody, 800.f);
+        CarDesc carDesc;
+        carDesc.carSize = { 1.f, 1.f, 2.f };
+        carDesc.mass = 1500.f;
+        car = new Car({ 0.f, 5.f, 0.f }, carDesc, wheelDesc);
 
-        actors.push_back(carBody);
-        
-        Wheel frWheel(carBody, { 0.5f, -0.5f, 0.8f }, 0.3, 0.5, 10000.f, 500.f);
-        wheels.push_back(frWheel);
-        Wheel flWheel = frWheel; flWheel.setMountPoint({ -0.5f, -0.5f, 0.8f });
-        wheels.push_back(flWheel);
-        Wheel brWheel = frWheel; brWheel.setMountPoint({ -0.5f, -0.5f, -0.8f });
-        wheels.push_back(brWheel);
-        Wheel blWheel = frWheel; blWheel.setMountPoint({ 0.5f, -0.5f, -0.8f });
-        wheels.push_back(blWheel);
+        // Escenario
+        physx::PxRigidStatic* elevacion = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 0.f, -50.f)));
+        physx::PxShape* elevacionShape = Physics::get().createShape(physx::PxBoxGeometry(10.f, 0.3f, 10.f), floorMat);
+        elevacionShape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+        elevacion->attachShape(*elevacionShape);
+        elevacionShape->release();
+        escenario.push_back(elevacion);
+
+        physx::PxRigidStatic* rampa = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(7.5f, -2.f, -70.f), physx::PxQuat(0.3f, {1.f, 0.f, 0.f})));
+        physx::PxShape* rampaShape = Physics::get().createShape(physx::PxBoxGeometry(10.f, 0.3f, 10.f), floorMat);
+        rampaShape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+        rampa->attachShape(*rampaShape);
+        rampaShape->release();
+        escenario.push_back(rampa);
     }
 
     void update(double dt) override
     {
-        for (Wheel& w : wheels)
-            w.update(dt);
+        physx::PxVec3 camPos = car->getPosition() + physx::PxVec3(0.f, 10.f, 20.f);
+        camera->setCameraPosition(camPos, car->getPosition() - camPos);
+
+        car->update(dt);
     }
 
     void drawGui() override
@@ -58,32 +74,36 @@ public:
         ImGui::Begin("Proyecto Final");
         ImGui::Text("Settings for final project");
 
-        if(ImGui::Button("Reset car pos"))
-            carBody->setGlobalPose(physx::PxTransform(physx::PxVec3(0.f, 5.f, 0.f)));
-        
+        car->drawGui();
+
         ImGui::End();
     }
 
     void render() override
     {
-        Renderer::get().renderActor(floor, true, { 1.f, 1.f, 1.f, 1.f });
-        Renderer::get().renderActor(carBody, true, { 1.f, 0.4f, 0.3f, 1.f });
+        Renderer::get().renderActor(floor, false, { 1.f, 1.f, 1.f, 1.f });
+        
+        car->render();
 
-        for (Wheel& w : wheels)
-            w.render();
+        for (auto a : escenario)
+            Renderer::get().renderActor(a, true, { 0.8f, 0.8f, 0.8f, 1.f });
+    }
+
+    void keyPress(unsigned char key) override
+    {
+
     }
 
     void cleanup() override
     {
+        delete car;
     }
 
 private:
-    std::vector<Wheel> wheels;
+    Car* car;
+
     physx::PxMaterial* floorMat;
     physx::PxRigidStatic* floor;
-
-    physx::PxRigidDynamic* carBody;
-
-    std::vector<physx::PxRigidActor*> actors;
+    std::vector<physx::PxRigidActor*> escenario;
 };
 
