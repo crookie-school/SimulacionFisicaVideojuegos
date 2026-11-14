@@ -37,13 +37,21 @@ public:
         wheelDesc.suspRestLength = 0.5f;
         wheelDesc.suspStiffness = 20000;
         wheelDesc.suspDamping = 1000;
-        wheelDesc.tiresFrictionCoeff = 0.5f;
-        wheelDesc.rollResistance = 0.01f;
+        wheelDesc.tiresFrictionCoeff = 0.9f;
+        wheelDesc.rollResistance = 0.05f;
+        wheelDesc.brakeCoeff = 0.3;
+
+        EngineDesc engineDesc;
+        engineDesc.differentialRatio = 3.42f;
+        engineDesc.transmissionEfficieny = 0.7f;
+        engineDesc.gears = { -2.9, 2.66, 1.78, 1.3, 1.0, 0.74, 0.5 };
+        engineDesc.RPMtoTorqueCurve = { {1000, 300}, {2000, 325}, {3000, 340}, {4000, 350}, {5000, 350}, {6000, 290} };
+        engineDesc.idleRPM = 1000.f;
 
         CarDesc carDesc;
         carDesc.carSize = { 1.f, 1.f, 2.f };
         carDesc.mass = 1500.f;
-        car = new Car({ 0.f, 5.f, 0.f }, carDesc, wheelDesc);
+        car = new Car({ 0.f, 5.f, 0.f }, carDesc, engineDesc, wheelDesc);
 
         // Escenario
         physx::PxRigidStatic* elevacion = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 0.f, -50.f)));

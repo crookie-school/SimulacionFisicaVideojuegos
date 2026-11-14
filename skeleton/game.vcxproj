@@ -262,6 +262,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App\Vehicle\Car.cpp" />
+    <ClCompile Include="App\Vehicle\Engine.cpp" />
     <ClCompile Include="Framework\BaseApplication.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
@@ -287,6 +288,7 @@
   <ItemGroup>
     <ClInclude Include="App\Scenes\ProyectoFinal_Scene.h" />
     <ClInclude Include="App\Vehicle\Car.h" />
+    <ClInclude Include="App\Vehicle\Engine.h" />
     <ClInclude Include="Framework\BaseApplication.h" />
     <ClInclude Include="App\Scenes\EmptyScene.h" />
     <ClInclude Include="App\ForceGenerator.h" />

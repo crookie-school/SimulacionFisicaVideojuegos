@@ -8,12 +8,13 @@
 struct WheelDesc
 {
 	physx::PxVec3 wheelMountPoint, forwardDir;
-	float wheelRadius, 
-		suspRestLength, 
-		suspStiffness, 
+	float wheelRadius,
+		suspRestLength,
+		suspStiffness,
 		suspDamping,
 		rollResistance, // Resistencia al rodamiento
-		tiresFrictionCoeff; // Newtons de agarre por Newtons de peso sobre la rueda
+		tiresFrictionCoeff, // Newtons de agarre por Newtons de peso sobre la rueda
+		brakeCoeff;
 };
 
 class Wheel
@@ -24,6 +25,7 @@ public:
 	void setMountPoint(physx::PxVec3 mount) { mountPoint = mount; }
 
 	void applyTorque(float torque);
+	void applyBrake(float brakeStr, float dt); // brakeStr: 0 - 1
 
 	void setSteer(float degrees) { steer = degrees; }
 
@@ -33,8 +35,10 @@ public:
 
 	void drawGui();
 
-private:
+	float getWheelAngularVelocity() const;
 
+private:
+	physx::PxVec3 getMountPointGlobal() const;
 	void applyForceToCarInMountPoint(const physx::PxVec3& localForce);
 
 	physx::PxRigidDynamic* vehicleBody;
@@ -47,9 +51,11 @@ private:
 	float restLength; // k
 	float stiffness; // k
 	float damping; // c
+	float brakeCoeff;
 	float suspensionLength;
 	float prevCompression = 0.f;
-	bool wasGrounded = false;
+	bool isGrounded = false;
+	float wheelLoad = 0.f;
 
 	// Gui
 	std::vector<float> suspensionLengthSampels;
