@@ -27,6 +27,7 @@ public:
 	void applyTorque(float torque);
 	void applyBrake(float brakeStr, float dt); // brakeStr: 0 - 1
 
+	float getSteer() const { return steer; }
 	void setSteer(float degrees) { steer = degrees; }
 
 	void update(float dt);

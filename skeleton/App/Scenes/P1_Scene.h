@@ -1,5 +1,6 @@
 #pragma once
 #include "../../Framework/Scene/Scene.h"
+#include "../../Framework/Input.h"
 #include <vector>
 #include <iostream>
 #include "Projectile.h"
@@ -40,6 +41,8 @@ public:
     }
 
     void update(double dt) override {
+        if (Input::get().wasKeyJustPressed(' ')) shoot(configs[selected]);
+
         for (Projectile* p : particles) {
             p->integrateEulerSemi(dt);
         }
@@ -110,11 +113,6 @@ public:
     {
         Vector3D shootDir = camera->getDir();
         particles.push_back(new Projectile(camera->getEye(), shootDir, conf.realVel, conf.simVel, conf.mass, conf.color));
-    }
-
-    void keyPress(unsigned char key) override
-    {
-        if (key == ' ') shoot(configs[selected]);
     }
 
     void cleanup() override {

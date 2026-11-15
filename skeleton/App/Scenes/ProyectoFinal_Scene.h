@@ -2,6 +2,7 @@
 #include "../../Framework/Scene/Scene.h"
 #include "../../Framework/Render/Renderer.h"
 #include "../../Framework/Physics.h"
+#include "../../Framework/Input.h"
 #include "../../ImGui/imgui.h"
 #include <vector>
 #include <iostream>
@@ -24,7 +25,7 @@ public:
         // suelo
         floorMat = Physics::get().createMaterial(0.2, 0.2, 0.2);
         floor = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, -0.501f, 0.f)));
-        physx::PxShape* plane = Physics::get().createShape(physx::PxBoxGeometry(50000.f, 0.5f, 50000.f), floorMat);
+        physx::PxShape* plane = Physics::get().createShape(physx::PxBoxGeometry(500.f, 0.5f, 500.f), floorMat);
         plane->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
         floor->attachShape(*plane);
         plane->release();
@@ -52,6 +53,7 @@ public:
         carDesc.carSize = { 1.f, 1.f, 2.f };
         carDesc.mass = 1500.f;
         car = new Car({ 0.f, 5.f, 0.f }, carDesc, engineDesc, wheelDesc);
+        car->changeGear(1);
 
         // Escenario
         physx::PxRigidStatic* elevacion = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 0.f, -50.f)));
@@ -75,6 +77,27 @@ public:
         camera->setCameraPosition(camPos, car->getPosition() - camPos);
 
         car->update(dt);
+
+        if (Input::get().isKeyDown('i')) car->setThrottlePos(1.f);
+        else car->setThrottlePos(0.f);
+
+        if (Input::get().isKeyDown('k')) car->brake(0.5f, dt);
+
+        if (Input::get().isKeyDown('j')) car->setSteer(physx::PxPiDivFour);
+        else if (Input::get().isKeyDown('l')) car->setSteer(-physx::PxPiDivFour);
+        else car->setSteer(0);
+
+        static int gear = 1;
+        if (Input::get().wasKeyJustPressed('u'))
+        {
+            gear = std::max(--gear, 0);
+            car->changeGear(gear);
+        }
+        else if(Input::get().wasKeyJustPressed('o'))
+        {
+            gear = std::min(++gear, 6);
+            car->changeGear(gear);
+        }
     }
 
     void drawGui() override
@@ -95,11 +118,6 @@ public:
 
         for (auto a : escenario)
             Renderer::get().renderActor(a, true, { 0.8f, 0.8f, 0.8f, 1.f });
-    }
-
-    void keyPress(unsigned char key) override
-    {
-
     }
 
     void cleanup() override

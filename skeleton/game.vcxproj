@@ -271,6 +271,7 @@
     <ClCompile Include="ImGui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Framework\Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="App\Particle.cpp" />
     <ClCompile Include="App\ParticleGenerator.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="Framework\Window.h" />
     <ClInclude Include="App\SIMApp.h" />
     <ClInclude Include="App\Vehicle\Wheel.h" />
+    <ClInclude Include="Framework\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

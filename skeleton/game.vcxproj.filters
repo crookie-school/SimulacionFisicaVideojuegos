@@ -24,6 +24,7 @@
     <ClCompile Include="App\Vehicle\Wheel.cpp" />
     <ClCompile Include="App\Vehicle\Car.cpp" />
     <ClCompile Include="App\Vehicle\Engine.cpp" />
+    <ClCompile Include="Framework\Input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="App\Vehicle\Wheel.h" />
     <ClInclude Include="App\Vehicle\Car.h" />
     <ClInclude Include="App\Vehicle\Engine.h" />
+    <ClInclude Include="Framework\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
