@@ -21,6 +21,9 @@ Window::Window(WindowDesc desc)
 	glutPassiveMotionFunc(s_motion);
 	glutReshapeFunc(s_reshape);
 	glutCloseFunc(s_close);
+	glutMouseWheelFunc(ImGui_ImplGLUT_MouseWheelFunc);
+	glutSpecialFunc(ImGui_ImplGLUT_SpecialFunc);
+	glutSpecialUpFunc(ImGui_ImplGLUT_SpecialUpFunc);
 }
 
 Window::~Window()
@@ -48,7 +51,6 @@ void Window::s_keyboardUp(unsigned char k, int x, int y)
 
 void Window::s_mouse(int b, int s, int x, int y)
 {
-
 	if (auto* w = static_cast<Window*>(glutGetWindowData()))
 		w->mouse(b, s, x, y);
 }

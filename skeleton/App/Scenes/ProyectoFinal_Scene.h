@@ -2,6 +2,7 @@
 #include "../../Framework/Scene/Scene.h"
 #include "../../Framework/Render/Renderer.h"
 #include "../../Framework/Physics.h"
+#include "../../Framework/Input.h"
 #include "../../ImGui/imgui.h"
 #include <vector>
 #include <iostream>
@@ -24,7 +25,7 @@ public:
         // suelo
         floorMat = Physics::get().createMaterial(0.2, 0.2, 0.2);
         floor = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, -0.501f, 0.f)));
-        physx::PxShape* plane = Physics::get().createShape(physx::PxBoxGeometry(50000.f, 0.5f, 50000.f), floorMat);
+        physx::PxShape* plane = Physics::get().createShape(physx::PxBoxGeometry(500.f, 0.5f, 500.f), floorMat);
         plane->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
         floor->attachShape(*plane);
         plane->release();
@@ -37,13 +38,22 @@ public:
         wheelDesc.suspRestLength = 0.5f;
         wheelDesc.suspStiffness = 20000;
         wheelDesc.suspDamping = 1000;
-        wheelDesc.tiresFrictionCoeff = 0.5f;
-        wheelDesc.rollResistance = 0.01f;
+        wheelDesc.tiresFrictionCoeff = 0.9f;
+        wheelDesc.rollResistance = 0.05f;
+        wheelDesc.brakeCoeff = 0.3;
+
+        EngineDesc engineDesc;
+        engineDesc.differentialRatio = 3.42f;
+        engineDesc.transmissionEfficieny = 0.7f;
+        engineDesc.gears = { -2.9, 2.66, 1.78, 1.3, 1.0, 0.74, 0.5 };
+        engineDesc.RPMtoTorqueCurve = { {1000, 300}, {2000, 325}, {3000, 340}, {4000, 350}, {5000, 350}, {6000, 290} };
+        engineDesc.idleRPM = 1000.f;
 
         CarDesc carDesc;
         carDesc.carSize = { 1.f, 1.f, 2.f };
         carDesc.mass = 1500.f;
-        car = new Car({ 0.f, 5.f, 0.f }, carDesc, wheelDesc);
+        car = new Car({ 0.f, 5.f, 0.f }, carDesc, engineDesc, wheelDesc);
+        car->changeGear(1);
 
         // Escenario
         physx::PxRigidStatic* elevacion = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 0.f, -50.f)));
@@ -67,6 +77,27 @@ public:
         camera->setCameraPosition(camPos, car->getPosition() - camPos);
 
         car->update(dt);
+
+        if (Input::get().isKeyDown('i')) car->setThrottlePos(1.f);
+        else car->setThrottlePos(0.f);
+
+        if (Input::get().isKeyDown('k')) car->brake(0.5f, dt);
+
+        if (Input::get().isKeyDown('j')) car->setSteer(physx::PxPiDivFour);
+        else if (Input::get().isKeyDown('l')) car->setSteer(-physx::PxPiDivFour);
+        else car->setSteer(0);
+
+        static int gear = 1;
+        if (Input::get().wasKeyJustPressed('u'))
+        {
+            gear = std::max(--gear, 0);
+            car->changeGear(gear);
+        }
+        else if(Input::get().wasKeyJustPressed('o'))
+        {
+            gear = std::min(++gear, 6);
+            car->changeGear(gear);
+        }
     }
 
     void drawGui() override
@@ -87,11 +118,6 @@ public:
 
         for (auto a : escenario)
             Renderer::get().renderActor(a, false, { 0.8f, 0.8f, 0.8f, 1.f });
-    }
-
-    void keyPress(unsigned char key) override
-    {
-
     }
 
     void cleanup() override

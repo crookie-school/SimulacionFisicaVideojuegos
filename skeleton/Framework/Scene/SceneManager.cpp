@@ -32,20 +32,6 @@ void SceneManager::applyPendingSceneChange() {
     m_pendingSceneName.clear();
 }
 
-void SceneManager::onKeyDown(unsigned char key)
-{
-    // Si no es una tecla de navegación global, se la pasamos a la escena activa
-    if (m_currentScene != nullptr)
-    {
-        m_currentScene->keyPress(key);
-    }
-}
-
-// Por ahora estas no se usan
-void SceneManager::onKeyUp(unsigned char k){}
-void SceneManager::onMouseButton(int b, int s, int x, int y){}
-void SceneManager::onMouseMove(int x, int y){}
-
 // Llamada por frame: aplica el cambio pendiente antes de actualizar la escena
 // para evitar modificar la escena mientras está siendo usada.
 void SceneManager::update(double dt) {

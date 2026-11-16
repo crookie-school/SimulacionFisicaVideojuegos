@@ -11,7 +11,7 @@
 // Gestor global de escenas (singleton).
 // Permite registrar fábricas de escenas por nombre, solicitar cambios de
 // escena de forma diferida y delegar llamadas de actualización y teclado.
-class SceneManager : public IInputEventListener {
+class SceneManager {
 public:
     SceneManager(Camera* cam) : camera(cam) {}
 
@@ -34,12 +34,6 @@ public:
     void drawGui();
 
     void render();
-
-    // Inherited via IInputEventListener
-    void onKeyDown(unsigned char k) override;
-    void onKeyUp(unsigned char k) override;
-    void onMouseButton(int b, int s, int x, int y) override;
-    void onMouseMove(int x, int y) override;
 
     // Devuelve un puntero a la escena actual (no toma propiedad).
     [[nodiscard]] Scene* getCurrentScene() const { return m_currentScene.get(); }

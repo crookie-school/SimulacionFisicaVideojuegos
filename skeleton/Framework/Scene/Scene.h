@@ -27,12 +27,6 @@ public:
 
     virtual void drawGui() {}
 
-    // Manejo de pulsación de tecla.
-    // Se recibe la tecla pulsada y la transformada de la cámara para
-    // permitir respuestas dependientes de la orientación/posición de la cámara.
-    // Método opcional que puede ser sobrescrito por escenas que lo necesiten.
-    virtual void keyPress(unsigned char key) {}
-
     // Devuelve el nombre identificador de la escena.
     [[nodiscard]] const std::string& getName() const { return m_name; }
 

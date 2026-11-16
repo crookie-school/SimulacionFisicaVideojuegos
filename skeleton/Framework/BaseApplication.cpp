@@ -2,13 +2,14 @@
 
 #include "Physics.h"
 #include "Render/Renderer.h"
+#include "Input.h"
 
 #include <chrono>
 
 BaseApplication::BaseApplication(const ApplicationDesc& desc) :
 	fixedTimestep(desc.fixedTimestep), window(desc.windowDesc), camera({0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}), sceneManager(&camera)
 {
-	window.addInputEventListener(&sceneManager);
+	window.addInputEventListener(&Input::get());
 	window.addInputEventListener(this);
 	window.addWindowEventListener(this);
 }
@@ -35,6 +36,8 @@ void BaseApplication::run()
 
 		while (physicsTimeAccumulator >= fixedTimestep)
 		{
+			Input::get().updateInputStates();
+
 			window.pollEvents();
 			if (!isRunning) return;
 
