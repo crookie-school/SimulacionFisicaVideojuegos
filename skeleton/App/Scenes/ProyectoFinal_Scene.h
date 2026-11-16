@@ -81,12 +81,12 @@ public:
 
     void render() override
     {
-        Renderer::get().renderActor(floor, false, { 1.f, 1.f, 1.f, 1.f });
+        //Renderer::get().renderActor(floor, false, { 1.f, 1.f, 1.f, 1.f });
         
         car->render();
 
         for (auto a : escenario)
-            Renderer::get().renderActor(a, true, { 0.8f, 0.8f, 0.8f, 1.f });
+            Renderer::get().renderActor(a, false, { 0.8f, 0.8f, 0.8f, 1.f });
     }
 
     void keyPress(unsigned char key) override

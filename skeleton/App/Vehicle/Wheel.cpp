@@ -85,7 +85,7 @@ void Wheel::render()
 	physx::PxTransform wheelGlobPos = vehicleBody->getGlobalPose() *
 		physx::PxTransform(wheelLocalMountPoint) *
 		physx::PxTransform(physx::PxQuat(steer, { 0.f, 1.f, 0.f })); // Rotamos visualmente la rueda segun el giro
-	Renderer::get().renderShape(physx::PxBoxGeometry(wheelRadius / 2.f, wheelRadius, wheelRadius), wheelGlobPos, { 0.f, 0.f, 0.f, 1.f });
+	Renderer::get().renderShape(physx::PxBoxGeometry(wheelRadius / 2.f, wheelRadius, wheelRadius), wheelGlobPos, { prevCompression, 1.f, 0.f, 1.f });
 }
 
 void Wheel::drawGui()
