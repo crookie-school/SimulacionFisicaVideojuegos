@@ -60,7 +60,7 @@ void Renderer::finishRender()
 	glutSwapBuffers();
 }
 
-void Renderer::renderMesh(const Mesh& mesh, const physx::PxTransform& transform)
+void Renderer::renderMesh(const Model& mesh, const physx::PxTransform& transform, const physx::PxVec3& scale)
 {
 	glPushMatrix();
 	PxMat44 mtx(transform);
@@ -69,7 +69,7 @@ void Renderer::renderMesh(const Mesh& mesh, const physx::PxTransform& transform)
 	glColor4f(1.f, 0.f, 0.f, 1.0f);
 	assert(glGetError() == GL_NO_ERROR);
 
-	mesh.render();
+	mesh.render(scale);
 
 	glPopMatrix();
 	assert(glGetError() == GL_NO_ERROR);
@@ -78,7 +78,7 @@ void Renderer::renderMesh(const Mesh& mesh, const physx::PxTransform& transform)
 	assert(glGetError() == GL_NO_ERROR);
 }
 
-void Renderer::renderMeshModel(const Mesh& mesh, const std::string& model, const physx::PxTransform& transform)
+void Renderer::renderMeshModel(const Model& mesh, const std::string& model, const physx::PxTransform& transform, const physx::PxVec3& scale)
 {
 
 	glPushMatrix();
@@ -88,7 +88,7 @@ void Renderer::renderMeshModel(const Mesh& mesh, const std::string& model, const
 	glColor4f(1.f, 0.f, 0.f, 1.0f);
 	assert(glGetError() == GL_NO_ERROR);
 
-	mesh.renderModel(model);
+	mesh.renderModel(model, scale);
 
 	glPopMatrix();
 	assert(glGetError() == GL_NO_ERROR);

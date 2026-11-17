@@ -30,38 +30,38 @@ public:
         floor->attachShape(*plane);
         plane->release();
 
-        MeshLibrary::get().addMesh("Assets/Humvee.obj");
-        MeshLibrary::get().getMesh("Assets/Humvee.obj").setScale({ 0.01f, 0.01f, 0.01f });
+        ModelLibrary::get().addModel("Assets/BMW.obj");
+        ModelLibrary::get().addModel("Assets/BMW_Wheel.obj");
 
         // Vehiculo
         WheelDesc wheelDesc;
-        wheelDesc.wheelMountPoint = { 0.6f, -0.3f, 1.f };
+        wheelDesc.wheelMountPoint = { 0.8f, -0.3f, 1.4f };
         wheelDesc.forwardDir = { 0.f, 0.f, 1.f };
         wheelDesc.wheelRadius = 0.3f;
-        wheelDesc.suspRestLength = 0.3f;
-        wheelDesc.suspStiffness = 20000;
+        wheelDesc.suspRestLength = 0.2f;
+        wheelDesc.suspStiffness = 30000;
         wheelDesc.suspDamping = 1000;
-        wheelDesc.tiresFrictionCoeff = 0.9f;
+        wheelDesc.tiresFrictionCoeff = 0.7f;
         wheelDesc.rollResistance = 0.05f;
         wheelDesc.brakeCoeff = 0.3;
-        wheelDesc.meshName = "Assets/Humvee.obj";
+        wheelDesc.meshName = "Assets/BMW_Wheel.obj";
 
         EngineDesc engineDesc;
         engineDesc.differentialRatio = 3.42f;
         engineDesc.transmissionEfficieny = 0.7f;
         engineDesc.gears = { -2.9, 2.66, 1.78, 1.3, 1.0, 0.74, 0.5 };
-        engineDesc.RPMtoTorqueCurve = { {1000, 300}, {2000, 325}, {3000, 340}, {4000, 350}, {5000, 350}, {6000, 290} };
+        engineDesc.RPMtoTorqueCurve = { {1000, 275}, {1500, 425}, { 2000, 500 }, {3000, 550}, {6000, 550}, {7000, 450} };
         engineDesc.idleRPM = 1000.f;
 
         CarDesc carDesc;
-        carDesc.carSize = { 1.5f, 0.5f, 3.f };
+        carDesc.carSize = { 1.5f, 0.8f, 4.f };
         carDesc.mass = 1500.f;
-        car = new Car({ 0.f, 5.f, 0.f }, "Assets/Humvee.obj", carDesc, engineDesc, wheelDesc);
+        car = new Car({ 0.f, 5.f, 0.f }, "Assets/BMW.obj", carDesc, engineDesc, wheelDesc);
         car->changeGear(1);
 
         // Escenario
         physx::PxRigidStatic* elevacion = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 0.f, -50.f)));
-        physx::PxShape* elevacionShape = Physics::get().createShape(physx::PxBoxGeometry(10.f, 0.3f, 10.f), floorMat);
+        physx::PxShape* elevacionShape = Physics::get().createShape(physx::PxBoxGeometry(10.f, 0.1f, 10.f), floorMat);
         elevacionShape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
         elevacion->attachShape(*elevacionShape);
         elevacionShape->release();
@@ -87,8 +87,8 @@ public:
 
         if (Input::get().isKeyDown('k')) car->brake(0.5f, dt);
 
-        if (Input::get().isKeyDown('j')) car->setSteer(physx::PxPiDivFour);
-        else if (Input::get().isKeyDown('l')) car->setSteer(-physx::PxPiDivFour);
+        if (Input::get().isKeyDown('j')) car->setSteer(physx::PxPi / 7);
+        else if (Input::get().isKeyDown('l')) car->setSteer(-physx::PxPi / 7);
         else car->setSteer(0);
 
         static int gear = 1;
@@ -102,6 +102,8 @@ public:
             gear = std::min(++gear, 6);
             car->changeGear(gear);
         }
+
+        if (Input::get().isKeyDown(' ')) car->pullHandbrake(1.f, dt);
     }
 
     void drawGui() override

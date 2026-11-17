@@ -1,9 +1,9 @@
-#include "Mesh.h"
+#include "Model.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
-Mesh::Mesh(const std::string& path)
+Model::Model(const std::string& path)
 {
 	std::ifstream fs(path);
 
@@ -26,9 +26,15 @@ Mesh::Mesh(const std::string& path)
 			int vIndex = shapes[i].mesh.indices[j].vertex_index * 3;
 			int nIndex = shapes[i].mesh.indices[j].normal_index * 3;
 
-			vertices.push_back(attrib.vertices[vIndex]);
-			vertices.push_back(attrib.vertices[vIndex + 1]);
-			vertices.push_back(attrib.vertices[vIndex + 2]);
+			float v1 = attrib.vertices[vIndex], v2 = attrib.vertices[vIndex+1], v3 = attrib.vertices[vIndex+2];
+
+			if (fabs(v1) > boundingBox.x) boundingBox.x = v1;
+			if (fabs(v2) > boundingBox.y) boundingBox.y = v2;
+			if (fabs(v3) > boundingBox.z) boundingBox.z = v3;
+
+			vertices.push_back(v1);
+			vertices.push_back(v2);
+			vertices.push_back(v3);
 
 			vertices.push_back(attrib.normals[nIndex]);
 			vertices.push_back(attrib.normals[nIndex + 1]);
@@ -37,7 +43,7 @@ Mesh::Mesh(const std::string& path)
 	}
 }
 
-void Mesh::render() const {
+void Model::render(const physx::PxVec3& scale) const {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glScaled(scale.x, scale.y, scale.z);
@@ -52,7 +58,7 @@ void Mesh::render() const {
 	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
-void Mesh::renderModel(const std::string& name) const {
+void Model::renderModel(const std::string& name, const physx::PxVec3& scale) const {
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);

@@ -5,7 +5,7 @@
 #include "Camera.h"
 #include <GL/freeglut.h>
 #include <string>
-#include "../ResourceLoader/Mesh.h"
+#include "../ResourceLoader/Model.h"
 
 class Renderer
 {
@@ -19,8 +19,8 @@ public:
 	void beginRender(const Camera& cam);
 	void finishRender();
 
-	void renderMesh(const Mesh& mesh, const physx::PxTransform& transform);
-	void renderMeshModel(const Mesh& mesh, const std::string& model, const physx::PxTransform& transform);
+	void renderMesh(const Model& mesh, const physx::PxTransform& transform, const physx::PxVec3& scale);
+	void renderMeshModel(const Model& mesh, const std::string& model, const physx::PxTransform& transform, const physx::PxVec3& scale);
 	void renderShape(const physx::PxGeometryHolder& shape, const physx::PxTransform& transform, const physx::PxVec4& color);
 	void renderActor(physx::PxRigidActor* actor, bool shadows, const physx::PxVec4& color);
 	void drawText(const std::string& text, int x, int y);

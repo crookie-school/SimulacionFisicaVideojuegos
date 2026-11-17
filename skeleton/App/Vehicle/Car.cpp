@@ -1,4 +1,5 @@
 #include "Car.h"
+#include "../../Framework/ResourceLoader/ModelLibrary.h"
 
 Car::Car(const physx::PxVec3& spawnPosition, const std::string& meshPath, const CarDesc& carDesc, const EngineDesc& engineDesc, const WheelDesc& wheelsDesc) :
     carBody(Physics::get().createDynamicRigidbody(physx::PxTransform(spawnPosition))),
@@ -10,13 +11,11 @@ Car::Car(const physx::PxVec3& spawnPosition, const std::string& meshPath, const 
     carFrontArea(carDesc.carSize.x* carDesc.carSize.z),
     carMeshName(meshPath)
 {
-    frW.setMountPoint({ wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, wheelsDesc.wheelMountPoint.z });
-    flW.setMountPoint({ -wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, wheelsDesc.wheelMountPoint.z });
-    brW.setMountPoint({ wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, -wheelsDesc.wheelMountPoint.z });
-    blW.setMountPoint({ -wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, -wheelsDesc.wheelMountPoint.z });
+    frW.setMountPoint({ -wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, wheelsDesc.wheelMountPoint.z }); 
+    flW.setMountPoint({ wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, wheelsDesc.wheelMountPoint.z }); flW.setFlipMesh(true);
+    brW.setMountPoint({ -wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, -wheelsDesc.wheelMountPoint.z });
+    blW.setMountPoint({ wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, -wheelsDesc.wheelMountPoint.z }); blW.setFlipMesh(true);
 
-    engine.attachWheel(&frW);
-    engine.attachWheel(&flW);
     engine.attachWheel(&brW);
     engine.attachWheel(&blW);
 
@@ -36,12 +35,12 @@ void Car::update(float dt)
     const float airRestistance = 0.5 * 0.3f * carFrontArea * 1.29f;
     carBody->addForce(-airRestistance * carVel * carVel.magnitude());
 
+    engine.update(dt);
+
     frW.update(dt);
     flW.update(dt);
     brW.update(dt);
     blW.update(dt);
-
-    engine.update(dt);
 }
 
 void Car::render()
@@ -51,9 +50,8 @@ void Car::render()
     flW.render();
     brW.render();
     blW.render();
-
     
-    Renderer::get().renderMesh(MeshLibrary::get().getMesh(carMeshName), carBody->getGlobalPose() * physx::PxTransform(0, -0.7f, 0));
+    Renderer::get().renderMesh(ModelLibrary::get().getModel(carMeshName), carBody->getGlobalPose() * physx::PxTransform(0, -0.7f, 0), {1.f, 1.f, 1.f});
 }
 
 void Car::drawGui()
@@ -102,7 +100,7 @@ void Car::drawGui()
     }
         
     ImGui::Begin("Car info");
-    float linVel = carBody->getLinearVelocity().magnitude();
+    float linVel = carBody->getLinearVelocity().magnitude() * 3.6f;
     float angVel = carBody->getAngularVelocity().magnitude();
     static std::vector<float> linVelocitySamples;
     static std::vector<float> angVelocitySamples;
@@ -117,7 +115,7 @@ void Car::drawGui()
     }
 
     char overlay[64];
-    sprintf(overlay, "linear velocity %f (m/s)", linVel);
+    sprintf(overlay, "linear velocity %f (km/s)", linVel);
     ImGui::PlotLines("##0",
         linVelocitySamples.data(),
         linVelocitySamples.size(),
