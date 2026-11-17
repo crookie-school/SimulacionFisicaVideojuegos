@@ -2,6 +2,7 @@
 
 #include "../../Framework/Physics.h"
 #include "../../Framework/Render/Renderer.h"
+#include "../../Framework/ResourceLoader/MeshLibrary.h"
 #include <iostream>
 #include <vector>
 
@@ -15,6 +16,7 @@ struct WheelDesc
 		rollResistance, // Resistencia al rodamiento
 		tiresFrictionCoeff, // Newtons de agarre por Newtons de peso sobre la rueda
 		brakeCoeff;
+	std::string meshName;
 };
 
 class Wheel
@@ -60,5 +62,7 @@ private:
 
 	// Gui
 	std::vector<float> suspensionLengthSampels;
+
+	std::string tireMeshName;
 };
 

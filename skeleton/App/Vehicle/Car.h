@@ -2,6 +2,7 @@
 
 #include "Wheel.h"
 #include "Engine.h"
+#include "../../Framework/ResourceLoader/Mesh.h"
 #include "../../Framework/Physics.h"
 #include "../../Framework/Render/Renderer.h"
 #include "../../ImGui/imgui.h"
@@ -16,7 +17,7 @@ struct CarDesc
 class Car
 {
 public:
-	Car(const physx::PxVec3& spawnPosition, const CarDesc& carDesc, const EngineDesc& engineDesc, const WheelDesc& wheelsDesc);
+	Car(const physx::PxVec3& spawnPosition, const std::string& meshPath, const CarDesc& carDesc, const EngineDesc& engineDesc, const WheelDesc& wheelsDesc);
 
     void update(float dt);
 
@@ -31,10 +32,12 @@ public:
     physx::PxVec3 getPosition() { return carBody->getGlobalPose().p; }
 
 private:
+    std::string carMeshName;
 	physx::PxRigidDynamic* carBody;
 	Wheel frW, flW, brW, blW;
     Engine engine;
-    physx::PxVec4 color = { 0.8f, 0.3f, 0.2f, 1.f };
+    physx::PxVec3 color = { 0.8f, 0.3f, 0.2f};
     float carFrontArea;
+    bool drawBodyCollider = true;
 };
 

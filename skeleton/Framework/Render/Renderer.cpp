@@ -5,6 +5,7 @@
 #include "../../ImGui/imgui_impl_opengl3.h"
 
 #include <cassert>
+#include <iostream>
 
 using namespace physx;
 
@@ -57,6 +58,43 @@ void Renderer::finishRender()
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	glutSwapBuffers();
+}
+
+void Renderer::renderMesh(const Mesh& mesh, const physx::PxTransform& transform)
+{
+	glPushMatrix();
+	PxMat44 mtx(transform);
+	glMultMatrixf(reinterpret_cast<const float*>(&mtx));
+	assert(glGetError() == GL_NO_ERROR);
+	glColor4f(1.f, 0.f, 0.f, 1.0f);
+	assert(glGetError() == GL_NO_ERROR);
+
+	mesh.render();
+
+	glPopMatrix();
+	assert(glGetError() == GL_NO_ERROR);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	assert(glGetError() == GL_NO_ERROR);
+}
+
+void Renderer::renderMeshModel(const Mesh& mesh, const std::string& model, const physx::PxTransform& transform)
+{
+
+	glPushMatrix();
+	PxMat44 mtx(transform);
+	glMultMatrixf(reinterpret_cast<const float*>(&mtx));
+	assert(glGetError() == GL_NO_ERROR);
+	glColor4f(1.f, 0.f, 0.f, 1.0f);
+	assert(glGetError() == GL_NO_ERROR);
+
+	mesh.renderModel(model);
+
+	glPopMatrix();
+	assert(glGetError() == GL_NO_ERROR);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	assert(glGetError() == GL_NO_ERROR);
 }
 
 void Renderer::renderShape(const PxGeometryHolder& shape, const PxTransform& transform, const PxVec4& color)

@@ -13,7 +13,8 @@ Wheel::Wheel(PxRigidDynamic* vehicleBody, const WheelDesc& desc) :
 	stiffness(desc.suspStiffness),
 	damping(desc.suspDamping),
 	brakeCoeff(desc.brakeCoeff),
-	suspensionLength(desc.suspRestLength)
+	suspensionLength(desc.suspRestLength),
+	tireMeshName(desc.meshName)
 {
 }
 
@@ -113,7 +114,8 @@ void Wheel::render()
 	const physx::PxTransform wheelGlobPos = vehicleBody->getGlobalPose() *
 		physx::PxTransform(wheelLocalMountPoint) *
 		physx::PxTransform(physx::PxQuat(steer, { 0.f, 1.f, 0.f })); // Rotamos visualmente la rueda segun el giro
-	Renderer::get().renderShape(physx::PxBoxGeometry(wheelRadius / 2.f, wheelRadius, wheelRadius), wheelGlobPos, { prevCompression, 1.f, 0.f, 1.f });
+	Renderer::get().renderShape(physx::PxBoxGeometry(wheelRadius / 2.f, wheelRadius, wheelRadius), wheelGlobPos, { prevCompression, 1.f, 0.f, 0.1f });
+	//Renderer::get().renderMeshModel(MeshLibrary::get().getMesh(tireMeshName), "tires", wheelGlobPos);
 }
 
 void Wheel::drawGui()

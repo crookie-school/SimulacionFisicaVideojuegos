@@ -30,17 +30,21 @@ public:
         floor->attachShape(*plane);
         plane->release();
 
+        MeshLibrary::get().addMesh("Assets/Humvee.obj");
+        MeshLibrary::get().getMesh("Assets/Humvee.obj").setScale({ 0.01f, 0.01f, 0.01f });
+
         // Vehiculo
         WheelDesc wheelDesc;
-        wheelDesc.wheelMountPoint = { 0.5f, -0.3f, 0.8f };
-        wheelDesc.forwardDir = { 0.f, 0.f, -1.f };
+        wheelDesc.wheelMountPoint = { 0.6f, -0.3f, 1.f };
+        wheelDesc.forwardDir = { 0.f, 0.f, 1.f };
         wheelDesc.wheelRadius = 0.3f;
-        wheelDesc.suspRestLength = 0.5f;
+        wheelDesc.suspRestLength = 0.3f;
         wheelDesc.suspStiffness = 20000;
         wheelDesc.suspDamping = 1000;
         wheelDesc.tiresFrictionCoeff = 0.9f;
         wheelDesc.rollResistance = 0.05f;
         wheelDesc.brakeCoeff = 0.3;
+        wheelDesc.meshName = "Assets/Humvee.obj";
 
         EngineDesc engineDesc;
         engineDesc.differentialRatio = 3.42f;
@@ -50,9 +54,9 @@ public:
         engineDesc.idleRPM = 1000.f;
 
         CarDesc carDesc;
-        carDesc.carSize = { 1.f, 1.f, 2.f };
+        carDesc.carSize = { 1.5f, 0.5f, 3.f };
         carDesc.mass = 1500.f;
-        car = new Car({ 0.f, 5.f, 0.f }, carDesc, engineDesc, wheelDesc);
+        car = new Car({ 0.f, 5.f, 0.f }, "Assets/Humvee.obj", carDesc, engineDesc, wheelDesc);
         car->changeGear(1);
 
         // Escenario
@@ -73,7 +77,7 @@ public:
 
     void update(double dt) override
     {
-        physx::PxVec3 camPos = car->getPosition() + physx::PxVec3(0.f, 10.f, 20.f);
+        physx::PxVec3 camPos = car->getPosition() + physx::PxVec3(0.f, 5.f, 10.f);
         camera->setCameraPosition(camPos, car->getPosition() - camPos);
 
         car->update(dt);
@@ -112,7 +116,7 @@ public:
 
     void render() override
     {
-        //Renderer::get().renderActor(floor, false, { 1.f, 1.f, 1.f, 1.f });
+        Renderer::get().renderActor(floor, false, { 1.f, 1.f, 1.f, 1.f });
         
         car->render();
 
