@@ -61,98 +61,87 @@ void Car::drawGui()
     ImGui::BeginGroup();
     ImGui::PushID(this);
 
-    if (ImGui::BeginTabBar("Car GUI tabs"))
+    ImGui::ColorEdit3("Car body color", &color.x);
+    ImGui::Checkbox("Draw body collider", &drawBodyCollider);
+
+    if (ImGui::Button("Reset car pos"))
     {
-        if(ImGui::BeginTabItem("Car Controls"))
-        {
-            ImGui::ColorEdit3("Car body color", &color.x);
-            ImGui::Checkbox("Draw body collider", &drawBodyCollider);
-
-            if (ImGui::Button("Reset car pos"))
-            {
-                carBody->setGlobalPose(physx::PxTransform(physx::PxVec3(0.f, 5.f, 0.f)));
-                carBody->setLinearVelocity({ 0.f, 0.f, 0.f });
-                carBody->setAngularVelocity({ 0.f, 0.f, 0.f });
-            }
-
-            float mass = carBody->getMass();
-            if (ImGui::SliderFloat("Mass", &mass, 200.f, 10000))
-                physx::PxRigidBodyExt::setMassAndUpdateInertia(*carBody, mass);
-
-            float throttle = engine.getThrottlePosition();
-            if (ImGui::VSliderFloat("##throttle", { 80, 150 }, &throttle, 0, 1, "%.2f\nThrottle"))
-                engine.setThrottlePosition(throttle);
-            ImGui::SameLine();
-
-            static float brakes;
-            if (ImGui::VSliderFloat("##brake", { 80, 150 }, &brakes, 0, 1, "%.2f\nBrake"))
-            {
-                frW.applyBrake(brakes, ImGui::GetIO().DeltaTime);
-                flW.applyBrake(brakes, ImGui::GetIO().DeltaTime);
-                brW.applyBrake(brakes, ImGui::GetIO().DeltaTime);
-                blW.applyBrake(brakes, ImGui::GetIO().DeltaTime);
-            }
-            ImGui::SameLine();
-
-            int gear = engine.getCurrentGear();
-            if (ImGui::VSliderInt("##gears", { 80, 150 }, &gear, 0, 6, "%d\nGear"))
-                engine.changeGear(gear);
-
-            float steering = frW.getSteer();
-            if (ImGui::SliderFloat("Steering", &steering, -physx::PxPi / 4, physx::PxPi / 4))
-            {
-                frW.setSteer(steering);
-                flW.setSteer(steering);
-            }
-            ImGui::EndTabItem();
-        }
-
-        if (ImGui::BeginTabItem("Car Data"))
-        {
-            float linVel = carBody->getLinearVelocity().magnitude();
-            float angVel = carBody->getAngularVelocity().magnitude();
-            static std::vector<float> linVelocitySamples;
-            static std::vector<float> angVelocitySamples;
-            static double refresh_time = 0.0;
-            while (refresh_time < ImGui::GetTime()) // Create data at fixed 60 Hz rate for the demo
-            {
-                linVelocitySamples.push_back(linVel);
-                if (linVelocitySamples.size() > 50) linVelocitySamples.erase(linVelocitySamples.begin());
-                angVelocitySamples.push_back(angVel);
-                if (angVelocitySamples.size() > 50) angVelocitySamples.erase(angVelocitySamples.begin());
-                refresh_time += 0.5f;
-            }
-
-            char overlay[64];
-            sprintf(overlay, "linear velocity %f (m/s)", linVel);
-            ImGui::PlotLines("##0",
-                linVelocitySamples.data(),
-                linVelocitySamples.size(),
-                0, overlay, 0.f, 200.f, { 500.f, 100.f });
-
-            sprintf(overlay, "angular velocity %f (rad/s)", angVel);
-            ImGui::PlotLines("##1",
-                angVelocitySamples.data(),
-                angVelocitySamples.size(),
-                0, overlay, 0.f, 50.f, { 500.f, 100.f });
-
-
-            ImGui::SeparatorText("Wheel data");
-            flW.drawGui();
-            ImGui::SameLine();
-            frW.drawGui();
-            blW.drawGui();
-            ImGui::SameLine();
-            brW.drawGui();
-
-            ImGui::SeparatorText("Engine data");
-            engine.drawGui();
-
-            ImGui::EndTabItem();
-        }
-
-        ImGui::EndTabBar();
+        carBody->setGlobalPose(physx::PxTransform(physx::PxVec3(0.f, 5.f, 0.f)));
+        carBody->setLinearVelocity({ 0.f, 0.f, 0.f });
+        carBody->setAngularVelocity({ 0.f, 0.f, 0.f });
     }
+
+    float mass = carBody->getMass();
+    if (ImGui::SliderFloat("Mass", &mass, 200.f, 10000))
+        physx::PxRigidBodyExt::setMassAndUpdateInertia(*carBody, mass);
+
+    float throttle = engine.getThrottlePosition();
+    if (ImGui::VSliderFloat("##throttle", { 80, 150 }, &throttle, 0, 1, "%.2f\nThrottle"))
+        engine.setThrottlePosition(throttle);
+    ImGui::SameLine();
+
+    static float brakes;
+    if (ImGui::VSliderFloat("##brake", { 80, 150 }, &brakes, 0, 1, "%.2f\nBrake"))
+    {
+        frW.applyBrake(brakes, ImGui::GetIO().DeltaTime);
+        flW.applyBrake(brakes, ImGui::GetIO().DeltaTime);
+        brW.applyBrake(brakes, ImGui::GetIO().DeltaTime);
+        blW.applyBrake(brakes, ImGui::GetIO().DeltaTime);
+    }
+    ImGui::SameLine();
+
+    int gear = engine.getCurrentGear();
+    if (ImGui::VSliderInt("##gears", { 80, 150 }, &gear, 0, 6, "%d\nGear"))
+        engine.changeGear(gear);
+
+    float steering = frW.getSteer();
+    if (ImGui::SliderFloat("Steering", &steering, -physx::PxPi / 4, physx::PxPi / 4))
+    {
+        frW.setSteer(steering);
+        flW.setSteer(steering);
+    }
+        
+    ImGui::Begin("Car info");
+    float linVel = carBody->getLinearVelocity().magnitude();
+    float angVel = carBody->getAngularVelocity().magnitude();
+    static std::vector<float> linVelocitySamples;
+    static std::vector<float> angVelocitySamples;
+    static double refresh_time = 0.0;
+    while (refresh_time < ImGui::GetTime()) // Create data at fixed 60 Hz rate for the demo
+    {
+        linVelocitySamples.push_back(linVel);
+        if (linVelocitySamples.size() > 50) linVelocitySamples.erase(linVelocitySamples.begin());
+        angVelocitySamples.push_back(angVel);
+        if (angVelocitySamples.size() > 50) angVelocitySamples.erase(angVelocitySamples.begin());
+        refresh_time += 0.5f;
+    }
+
+    char overlay[64];
+    sprintf(overlay, "linear velocity %f (m/s)", linVel);
+    ImGui::PlotLines("##0",
+        linVelocitySamples.data(),
+        linVelocitySamples.size(),
+        0, overlay, 0.f, 200.f, { 500.f, 100.f });
+
+    sprintf(overlay, "angular velocity %f (rad/s)", angVel);
+    ImGui::PlotLines("##1",
+        angVelocitySamples.data(),
+        angVelocitySamples.size(),
+        0, overlay, 0.f, 50.f, { 500.f, 100.f });
+
+
+    ImGui::SeparatorText("Wheel data");
+    flW.drawGui();
+    ImGui::SameLine();
+    frW.drawGui();
+    blW.drawGui();
+    ImGui::SameLine();
+    brW.drawGui();
+
+    ImGui::SeparatorText("Engine data");
+    engine.drawGui();
+    
+    ImGui::End();
 
     ImGui::PopID();
     ImGui::EndGroup();
