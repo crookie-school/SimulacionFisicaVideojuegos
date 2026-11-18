@@ -22,7 +22,7 @@ Texture& Texture::operator=(Texture&& other)
 {
     if (&other == this) return *this;
 
-    if (other.id) glDeleteTextures(1, &id);
+    if (id) glDeleteTextures(1, &id);
 
     id = other.id;
     other.id = 0;
@@ -31,6 +31,9 @@ Texture& Texture::operator=(Texture&& other)
 }
 
 Texture::Texture(const std::string& path) {
+
+    stbi_set_flip_vertically_on_load(true);
+
     int x, y, n;
     unsigned char* data = stbi_load(path.c_str(), &x, &y, &n, 3);
 

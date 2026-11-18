@@ -62,7 +62,7 @@ Model::Model(const std::string& path)
 	for (int i = 0; i < materials.size(); ++i) {
 		if (materials[i].diffuse_texname.empty()) continue;
 
-		textures.emplace(std::make_pair(materials[i].diffuse_texname, Texture(materials[i].diffuse_texname)));
+		textures.emplace(std::make_pair(materials[i].diffuse_texname, Texture("Assets/" + materials[i].diffuse_texname)));
 	}
 }
 

@@ -189,7 +189,7 @@ void Wheel::setWheelRadius(float radius)
 
 	Model& wheelMesh = ModelLibrary::get().getModel(tireMeshName);
 	const physx::PxVec3 bounds = wheelMesh.getBoundingBox();
-	physx::PxVec3 newScale(wheelRadius / bounds.x, wheelRadius / bounds.y, wheelRadius / bounds.z);
+	physx::PxVec3 newScale(1, wheelRadius / bounds.y, wheelRadius / bounds.z);
 	wheelScale = newScale;
 }
 

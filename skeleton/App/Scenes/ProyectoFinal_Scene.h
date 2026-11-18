@@ -30,22 +30,21 @@ public:
         floor->attachShape(*plane);
         plane->release();
 
-        ModelLibrary::get().addModel("Assets/BMW.obj");
-        ModelLibrary::get().addModel("Assets/BMW_Wheel.obj");
-        ModelLibrary::get().addModel("Assets/monkey.obj");
+        ModelLibrary::get().addModel("Assets/ambulance.obj");
+        ModelLibrary::get().addModel("Assets/wheel-default.obj");
 
         // Vehiculo
         WheelDesc wheelDesc;
-        wheelDesc.wheelMountPoint = { 0.8f, -0.3f, 1.4f };
+        wheelDesc.wheelMountPoint = { 0.5f, -0.3f, 1.f };
         wheelDesc.forwardDir = { 0.f, 0.f, 1.f };
         wheelDesc.wheelRadius = 0.3f;
-        wheelDesc.suspRestLength = 0.2f;
+        wheelDesc.suspRestLength = 0.3f;
         wheelDesc.suspStiffness = 30000;
         wheelDesc.suspDamping = 1000;
         wheelDesc.tiresFrictionCoeff = 0.7f;
         wheelDesc.rollResistance = 0.05f;
         wheelDesc.brakeCoeff = 0.3;
-        wheelDesc.meshName = "Assets/BMW_Wheel.obj";
+        wheelDesc.meshName = "Assets/wheel-default.obj";
 
         EngineDesc engineDesc;
         engineDesc.differentialRatio = 3.42f;
@@ -55,9 +54,9 @@ public:
         engineDesc.idleRPM = 1000.f;
 
         CarDesc carDesc;
-        carDesc.carSize = { 1.5f, 0.8f, 4.f };
+        carDesc.carSize = { 1.5f, 0.8f, 3.2f };
         carDesc.mass = 1500.f;
-        car = new Car({ 0.f, 5.f, 0.f }, "Assets/BMW.obj", carDesc, engineDesc, wheelDesc);
+        car = new Car({ 0.f, 5.f, 0.f }, "Assets/ambulance.obj", carDesc, engineDesc, wheelDesc);
         car->changeGear(1);
 
         // Escenario
@@ -125,8 +124,6 @@ public:
 
         for (auto a : escenario)
             Renderer::get().renderActor(a, false, { 0.8f, 0.8f, 0.8f, 1.f });
-
-        Renderer::get().renderMesh(ModelLibrary::get().getModel("Assets/monkey.obj"), physx::PxTransform(0.f, 0.0f, 0.f), { 1.f, 1.f, 1.f });
     }
 
     void cleanup() override

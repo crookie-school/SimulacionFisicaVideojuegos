@@ -12,9 +12,9 @@ Car::Car(const physx::PxVec3& spawnPosition, const std::string& meshPath, const 
     carMeshName(meshPath)
 {
     frW.setMountPoint({ -wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, wheelsDesc.wheelMountPoint.z }); 
-    flW.setMountPoint({ wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, wheelsDesc.wheelMountPoint.z }); flW.setFlipMesh(true);
+    flW.setMountPoint({ wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, wheelsDesc.wheelMountPoint.z }); frW.setFlipMesh(true);
     brW.setMountPoint({ -wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, -wheelsDesc.wheelMountPoint.z });
-    blW.setMountPoint({ wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, -wheelsDesc.wheelMountPoint.z }); blW.setFlipMesh(true);
+    blW.setMountPoint({ wheelsDesc.wheelMountPoint.x, wheelsDesc.wheelMountPoint.y, -wheelsDesc.wheelMountPoint.z }); brW.setFlipMesh(true);
 
     engine.attachWheel(&brW);
     engine.attachWheel(&blW);
@@ -51,7 +51,7 @@ void Car::render()
     brW.render();
     blW.render();
     
-    Renderer::get().renderMesh(ModelLibrary::get().getModel(carMeshName), carBody->getGlobalPose() * physx::PxTransform(0, -0.7f, 0), {1.f, 1.f, 1.f});
+    Renderer::get().renderMeshModel(ModelLibrary::get().getModel(carMeshName), "body", carBody->getGlobalPose() * physx::PxTransform(0, -0.7f, 0), {1.f, 1.f, 1.f});
 }
 
 void Car::drawGui()
