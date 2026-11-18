@@ -19,8 +19,8 @@ public:
 	void beginRender(const Camera& cam);
 	void finishRender();
 
-	void renderMesh(const Model& mesh, const physx::PxTransform& transform, const physx::PxVec3& scale);
-	void renderMeshModel(const Model& mesh, const std::string& model, const physx::PxTransform& transform, const physx::PxVec3& scale);
+	void renderMesh(const Model& mesh, const physx::PxTransform& transform, const physx::PxVec3& scale, const physx::PxVec4& color = {1.f, 1.f, 1.f, 1.f});
+	void renderMeshModel(const Model& mesh, const std::string& model, const physx::PxTransform& transform, const physx::PxVec3& scale, const physx::PxVec4& color = { 1.f, 1.f, 1.f, 1.f });
 	void renderShape(const physx::PxGeometryHolder& shape, const physx::PxTransform& transform, const physx::PxVec4& color);
 	void renderActor(physx::PxRigidActor* actor, bool shadows, const physx::PxVec4& color);
 	void drawText(const std::string& text, int x, int y);

@@ -4,9 +4,15 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include "Texture.h"
 #include <GL/freeglut.h>
 #include <PxPhysicsAPI.h>
 #include "tiny_obj_loader.h"
+
+struct Mesh {
+	std::vector<float> data;
+	std::string tex;
+};
 
 class Model
 {
@@ -20,7 +26,11 @@ public:
 	physx::PxVec3 getBoundingBox() const { return boundingBox; }
 
 private:
-	std::unordered_map<std::string, std::vector<float>> meshes;
+	void renderMesh(const Mesh& mesh) const;
+
+	std::unordered_map<std::string, Mesh> meshes;
+	std::unordered_map<std::string, Texture> textures;
+
 	physx::PxVec3 boundingBox{ 0.f, 0.f, 0.f };
 };
 

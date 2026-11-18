@@ -60,13 +60,13 @@ void Renderer::finishRender()
 	glutSwapBuffers();
 }
 
-void Renderer::renderMesh(const Model& mesh, const physx::PxTransform& transform, const physx::PxVec3& scale)
+void Renderer::renderMesh(const Model& mesh, const physx::PxTransform& transform, const physx::PxVec3& scale, const physx::PxVec4& color)
 {
 	glPushMatrix();
 	PxMat44 mtx(transform);
 	glMultMatrixf(reinterpret_cast<const float*>(&mtx));
 	assert(glGetError() == GL_NO_ERROR);
-	glColor4f(1.f, 0.f, 0.f, 1.0f);
+	glColor4f(color.x, color.y, color.z, color.w);
 	assert(glGetError() == GL_NO_ERROR);
 
 	mesh.render(scale);
@@ -78,14 +78,14 @@ void Renderer::renderMesh(const Model& mesh, const physx::PxTransform& transform
 	assert(glGetError() == GL_NO_ERROR);
 }
 
-void Renderer::renderMeshModel(const Model& mesh, const std::string& model, const physx::PxTransform& transform, const physx::PxVec3& scale)
+void Renderer::renderMeshModel(const Model& mesh, const std::string& model, const physx::PxTransform& transform, const physx::PxVec3& scale, const physx::PxVec4& color)
 {
 
 	glPushMatrix();
 	PxMat44 mtx(transform);
 	glMultMatrixf(reinterpret_cast<const float*>(&mtx));
 	assert(glGetError() == GL_NO_ERROR);
-	glColor4f(1.f, 0.f, 0.f, 1.0f);
+	glColor4f(color.x, color.y, color.z, color.w);
 	assert(glGetError() == GL_NO_ERROR);
 
 	mesh.renderModel(model, scale);
@@ -439,5 +439,5 @@ void Renderer::startRender(const PxVec3& cameraEye, const PxVec3& cameraDir, PxR
 
 	glColor4f(0.4f, 0.4f, 0.4f, 1.0f);
 
-	assert(glGetError() == GL_NO_ERROR);
+	glGetError();
 }

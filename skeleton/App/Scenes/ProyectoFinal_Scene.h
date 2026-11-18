@@ -32,6 +32,7 @@ public:
 
         ModelLibrary::get().addModel("Assets/BMW.obj");
         ModelLibrary::get().addModel("Assets/BMW_Wheel.obj");
+        ModelLibrary::get().addModel("Assets/monkey.obj");
 
         // Vehiculo
         WheelDesc wheelDesc;
@@ -124,6 +125,8 @@ public:
 
         for (auto a : escenario)
             Renderer::get().renderActor(a, false, { 0.8f, 0.8f, 0.8f, 1.f });
+
+        Renderer::get().renderMesh(ModelLibrary::get().getModel("Assets/monkey.obj"), physx::PxTransform(0.f, 0.0f, 0.f), { 1.f, 1.f, 1.f });
     }
 
     void cleanup() override
