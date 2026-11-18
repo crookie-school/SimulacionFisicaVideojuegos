@@ -130,10 +130,8 @@ void Car::drawGui()
 
     ImGui::SeparatorText("Wheel data");
     flW.drawGui();
-    ImGui::SameLine();
     frW.drawGui();
     blW.drawGui();
-    ImGui::SameLine();
     brW.drawGui();
 
     ImGui::SeparatorText("Engine data");

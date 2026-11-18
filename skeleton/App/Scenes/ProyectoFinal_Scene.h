@@ -31,17 +31,17 @@ public:
         floor->attachShape(*plane);
         plane->release();
 
-        ModelLibrary::get().addModel("Assets/ambulance.obj");
+        Model& carModel = ModelLibrary::get().addModel("Assets/sedan-sports.obj");
         ModelLibrary::get().addModel("Assets/wheel-default.obj");
 
         // Vehiculo
         WheelDesc wheelDesc;
-        wheelDesc.wheelMountPoint = { 0.5f, -0.3f, 1.f };
+        wheelDesc.wheelMountPoint = { 0.5f, -0.3f, 0.7f };
         wheelDesc.forwardDir = { 0.f, 0.f, 1.f };
         wheelDesc.wheelRadius = 0.3f;
         wheelDesc.suspRestLength = 0.3f;
-        wheelDesc.suspStiffness = 30000;
-        wheelDesc.suspDamping = 1000;
+        wheelDesc.suspStiffness = 35000;
+        wheelDesc.suspDamping = 3000;
         wheelDesc.tiresFrictionCoeff = 0.9f;
         wheelDesc.rollResistance = 0.05f;
         wheelDesc.brakeCoeff = 0.3;
@@ -51,13 +51,13 @@ public:
         engineDesc.differentialRatio = 3.42f;
         engineDesc.transmissionEfficieny = 0.7f;
         engineDesc.gears = { -2.9, 2.66, 1.78, 1.3, 1.0, 0.74, 0.5 };
-        engineDesc.RPMtoTorqueCurve = { {1000, 425}, {1500, 425}, { 2000, 500 }, {3000, 550}, {6000, 550}, {7000, 450} };
+        engineDesc.RPMtoTorqueCurve = { {1000, 225}, {1500, 300}, { 2000, 425 }, {3000, 550}, {6000, 550}, {7000, 450} };
         engineDesc.idleRPM = 1000.f;
 
         CarDesc carDesc;
-        carDesc.carSize = { 1.5f, 0.8f, 3.2f };
+        carDesc.carSize = { 1.5f, 0.8f, 2.2f };
         carDesc.mass = 1500.f;
-        car = new Car({ 0.f, 5.f, 0.f }, "Assets/ambulance.obj", carDesc, engineDesc, wheelDesc);
+        car = new Car({ 0.f, 5.f, 0.f }, "Assets/sedan-sports.obj", carDesc, engineDesc, wheelDesc);
         car->changeGear(1);
 
         // Escenario

@@ -29,10 +29,7 @@ void Wheel::applyTorque(float torque)
 	float driveStrength = torque / wheelRadius;
 	const float maxStrength = tiresFrictionCoeff * wheelLoad;
 	driveStrength = physx::PxClamp(driveStrength, -maxStrength, maxStrength);
-	driveStrength = consumeGrip(driveStrength);
-
-	// Pasamos de N/m a N dividiendo entre el radio de la rueda
-	applyForceToCarInMountPoint(finalDir * driveStrength);
+	longitudinalForce += driveStrength;
 }
 
 // Deberia hacer que la frenada se aplique en el update para controlar el consume de agarre
@@ -56,10 +53,7 @@ void Wheel::applyBrake(float brakeAmount, float dt)
 
 	// Calculamos la fuerza de frenado producida
 	float brakeStrength = physx::PxClamp(stopForce, -brakeLimit, brakeLimit);
-	brakeStrength = consumeGrip(brakeStrength);
-
-	const physx::PxVec3 brakeForce = forwardGlobal * brakeStrength;
-	physx::PxRigidBodyExt::addForceAtPos(*vehicleBody, brakeForce, mountPointGlobal);
+	longitudinalForce += brakeStrength;
 }
 
 void Wheel::update(float dt)
@@ -95,7 +89,7 @@ void Wheel::update(float dt)
 	wheelLoad = physx::PxMax(0.f, stiffness * compression + damping * compressionVel);
 	applyForceToCarInMountPoint({ 0.f, wheelLoad, 0.f });
 
-	// Calculamos la resistencia de la rueda al moviemiento actual
+	// Calculamos las fuerzas longitudinales y transversales a la rueda
 	const physx::PxVec3 forwardGlobal = vehicleBody->getGlobalPose().rotate(physx::PxQuat(steer, {0, 1, 0}).rotate(forward)); // Cogemos la direccion en coordenadas globales de la rueda
 	const physx::PxVec3 sideGlobal = vehicleBody->getGlobalPose().rotate({0.f, 1.f, 0.f}).cross(forwardGlobal); // Cogemos el vector perpendicular de la direccion de la rueda, tambien en global
 	const physx::PxVec3 vel = physx::PxRigidBodyExt::getVelocityAtPos(*vehicleBody, origin); // Cogemos la velocidad actual del cuerpo en la posicion de la rueda
@@ -106,7 +100,10 @@ void Wheel::update(float dt)
 
 	// Calculamos la resistencia al rodamiento (resistencia al movimiento de frente)
 	float rollResStrength = -rollResistance * wheelLoad * physx::PxSign(vForward);
-	rollResStrength = consumeGrip(rollResStrength);
+	longitudinalForce += rollResStrength;
+
+	// Calculamos la fuerza total longitudinal
+	longitudinalForce = consumeGrip(longitudinalForce);
 
 	// Calculamos la resistencia al derrape (resistencia al movimiento lateral)
 	const float massOnTheWheel = wheelLoad / 9.81f;
@@ -114,9 +111,11 @@ void Wheel::update(float dt)
 	sideSlideResStrength = consumeGrip(sideSlideResStrength);
 
 	// Aplicamos la fuerza de resistencia
-	const physx::PxVec3 forwMovementResistanceForce = forwardGlobal * rollResStrength;
-	const physx::PxVec3 sideMovementResistanceForce = sideGlobal * sideSlideResStrength;
-	physx::PxRigidBodyExt::addForceAtPos(*vehicleBody, forwMovementResistanceForce + sideMovementResistanceForce, origin);
+	const physx::PxVec3 forwAxisForce = forwardGlobal * longitudinalForce;
+	const physx::PxVec3 sideAxisForce = sideGlobal * sideSlideResStrength;
+	physx::PxRigidBodyExt::addForceAtPos(*vehicleBody, forwAxisForce + sideAxisForce, origin);
+
+	longitudinalForce = 0;
 
 
 	// Integramos la rotacion de la rueda (para el render)
@@ -172,7 +171,8 @@ void Wheel::drawGui()
 
 	ImGui::SameLine();
 	sprintf(overlay, "%.2f/%.2f", wheelGripBudget, wheelLoad * tiresFrictionCoeff);
-	ImGui::ProgressBar(wheelGripBudget / wheelLoad * tiresFrictionCoeff, { 100.f, 100.f }, overlay);
+	const float maxForce = wheelLoad * tiresFrictionCoeff;
+	ImGui::ProgressBar(maxForce > 0.f ? wheelGripBudget / maxForce : 0.f, { 100.f, 100.f }, overlay);
 	ImGui::PopID();
 }
 

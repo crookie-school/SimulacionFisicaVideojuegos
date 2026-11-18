@@ -64,6 +64,10 @@ private:
 	float suspensionLength;
 	float prevCompression = 0.f;
 	bool isGrounded = false;
+
+	// Force to be applied in the next update
+	float longitudinalForce = 0.f;
+
 	float wheelGripBudget = 0.f; // Each force applied to the wheel consumes grip budget, if no budget is available, no force may be made (no budget is when wheelGripBudget == wheelLoad * tiresFrictionCoeff)
 	float wheelLoad = 0.f;
 	float totalRotation = 0.f; // Rotation to render the wheel rotated depending on distance translated
