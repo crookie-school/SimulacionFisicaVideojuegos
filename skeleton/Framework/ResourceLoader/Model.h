@@ -25,6 +25,8 @@ public:
 
 	physx::PxVec3 getBoundingBox() const { return boundingBox; }
 
+	const std::vector<float>& getMesh(const std::string& meshName) const;
+
 private:
 	void renderMesh(const Mesh& mesh) const;
 

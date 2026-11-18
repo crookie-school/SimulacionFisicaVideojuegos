@@ -5,6 +5,8 @@
 #include <PxPhysicsVersion.h>
 #include <iostream>
 
+#include "ResourceLoader/Model.h"
+
 #define PVD_HOST "127.0.0.1" // IP localhost for PVD connection
 
 using namespace physx;
@@ -36,6 +38,8 @@ public:
 	physx::PxShape* createShape(const physx::PxGeometry& geom, physx::PxMaterial* mat);
 	physx::PxMaterial* createMaterial(float staticFriction, float dynamicFriction, float restitution);
 
+	physx::PxTriangleMesh* cookMesh(const Model& model, const std::string& meshName);
+
 	bool raycast(const physx::PxVec3& origin, const physx::PxVec3& dir, float maxDistance, physx::PxRaycastBuffer& hitData);
 
 private:
@@ -55,12 +59,13 @@ private:
 	PxFoundation* foundation = NULL;
 	PxPhysics* physics = NULL;
 
-
 	PxMaterial* material = NULL;
 
 	PxPvd* pvd = NULL;
 
 	PxDefaultCpuDispatcher* dispatcher = NULL;
 	PxScene* scene = NULL;
+
+	PxCooking* cooking = NULL;
 };
 

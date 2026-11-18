@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "../Vehicle/Car.h"
+#include "../SceneObstacle.h"
 
 static constexpr int FR_WHEEL = 0;
 static constexpr int FL_WHEEL = 1;
@@ -41,7 +42,7 @@ public:
         wheelDesc.suspRestLength = 0.3f;
         wheelDesc.suspStiffness = 30000;
         wheelDesc.suspDamping = 1000;
-        wheelDesc.tiresFrictionCoeff = 0.7f;
+        wheelDesc.tiresFrictionCoeff = 0.9f;
         wheelDesc.rollResistance = 0.05f;
         wheelDesc.brakeCoeff = 0.3;
         wheelDesc.meshName = "Assets/wheel-default.obj";
@@ -50,7 +51,7 @@ public:
         engineDesc.differentialRatio = 3.42f;
         engineDesc.transmissionEfficieny = 0.7f;
         engineDesc.gears = { -2.9, 2.66, 1.78, 1.3, 1.0, 0.74, 0.5 };
-        engineDesc.RPMtoTorqueCurve = { {1000, 275}, {1500, 425}, { 2000, 500 }, {3000, 550}, {6000, 550}, {7000, 450} };
+        engineDesc.RPMtoTorqueCurve = { {1000, 425}, {1500, 425}, { 2000, 500 }, {3000, 550}, {6000, 550}, {7000, 450} };
         engineDesc.idleRPM = 1000.f;
 
         CarDesc carDesc;
@@ -60,19 +61,37 @@ public:
         car->changeGear(1);
 
         // Escenario
-        physx::PxRigidStatic* elevacion = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 0.f, -50.f)));
-        physx::PxShape* elevacionShape = Physics::get().createShape(physx::PxBoxGeometry(10.f, 0.1f, 10.f), floorMat);
-        elevacionShape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
-        elevacion->attachShape(*elevacionShape);
-        elevacionShape->release();
-        escenario.push_back(elevacion);
+        Model& roadStraightLongMidModel = ModelLibrary::get().addModel("Assets/roadStraightLongMid.obj");
+        Model& roadRampModel = ModelLibrary::get().addModel("Assets/roadRampLongWall.obj");
+        Model& coneModel = ModelLibrary::get().addModel("Assets/cone.obj");
 
-        physx::PxRigidStatic* rampa = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(7.5f, -2.f, -70.f), physx::PxQuat(0.3f, {1.f, 0.f, 0.f})));
-        physx::PxShape* rampaShape = Physics::get().createShape(physx::PxBoxGeometry(10.f, 0.3f, 10.f), floorMat);
-        rampaShape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
-        rampa->attachShape(*rampaShape);
-        rampaShape->release();
-        escenario.push_back(rampa);
+        physx::PxRigidStatic* roadStraight = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 0.f, 0.f)));
+        physx::PxShape* roadStraightShape;
+        physx::PxTriangleMeshGeometry triGeom;
+        triGeom.triangleMesh = Physics::get().cookMesh(roadStraightLongMidModel, "roadStraightLongMid");
+        triGeom.scale = physx::PxMeshScale(4.f);
+        roadStraightShape = Physics::get().createShape(triGeom, floorMat);
+        roadStraightShape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+        roadStraight->attachShape(*roadStraightShape);
+        roadStraightShape->release();
+        escenario.push_back({ roadStraightLongMidModel, roadStraight});
+
+        physx::PxRigidStatic* ramp = Physics::get().createStaticRigidbody(physx::PxTransform(physx::PxVec3(0.f, 0.f, -10.f), physx::PxQuat(physx::PxPi, { 0, 1, 0 })));
+        physx::PxShape* rampShape;
+        triGeom.triangleMesh = Physics::get().cookMesh(roadRampModel, "roadRampLongWall");
+        triGeom.scale = physx::PxMeshScale(4.f);
+        rampShape = Physics::get().createShape(triGeom, floorMat);
+        rampShape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+        ramp->attachShape(*rampShape);
+        rampShape->release();
+        escenario.push_back({ roadRampModel, ramp });
+
+        physx::PxRigidDynamic* cone = Physics::get().createDynamicRigidbody(physx::PxTransform(physx::PxVec3(-10.f, 0.f, -10.f), physx::PxQuat(physx::PxPi, { 0, 1, 0 })));
+        physx::PxShape* coneShape = Physics::get().createShape(physx::PxBoxGeometry(coneModel.getBoundingBox() * 4/2), floorMat);
+        coneShape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+        cone->attachShape(*coneShape);
+        coneShape->release();
+        escenario.push_back({ coneModel, cone });
     }
 
     void update(double dt) override
@@ -122,8 +141,9 @@ public:
         
         car->render();
 
-        for (auto a : escenario)
-            Renderer::get().renderActor(a, false, { 0.8f, 0.8f, 0.8f, 1.f });
+        for (auto obst : escenario)
+            Renderer::get().renderMesh(obst.model, obst.actor->getGlobalPose(), {4.f, 4.f, 4.f}, {0.8f, 0.8f, 0.8f, 1.f});
+
     }
 
     void cleanup() override
@@ -136,6 +156,6 @@ private:
 
     physx::PxMaterial* floorMat;
     physx::PxRigidStatic* floor;
-    std::vector<physx::PxRigidActor*> escenario;
+    std::vector<SceneObstacle> escenario;
 };
 

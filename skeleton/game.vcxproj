@@ -289,6 +289,7 @@
     <ClCompile Include="Framework\ResourceLoader\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\SceneObstacle.h" />
     <ClInclude Include="App\Scenes\ProyectoFinal_Scene.h" />
     <ClInclude Include="App\Vehicle\Car.h" />
     <ClInclude Include="App\Vehicle\Engine.h" />

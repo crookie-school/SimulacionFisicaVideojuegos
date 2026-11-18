@@ -31,9 +31,9 @@ Model::Model(const std::string& path)
 
 			float v1 = attrib.vertices[vIndex], v2 = attrib.vertices[vIndex+1], v3 = attrib.vertices[vIndex+2];
 
-			if (fabs(v1) > boundingBox.x) boundingBox.x = v1;
-			if (fabs(v2) > boundingBox.y) boundingBox.y = v2;
-			if (fabs(v3) > boundingBox.z) boundingBox.z = v3;
+			if (fabs(v1) > boundingBox.x) boundingBox.x = fabs(v1);
+			if (fabs(v2) > boundingBox.y) boundingBox.y = fabs(v2);
+			if (fabs(v3) > boundingBox.z) boundingBox.z = fabs(v3);
 
 			vertices.push_back(v1);
 			vertices.push_back(v2);
@@ -79,6 +79,11 @@ void Model::renderModel(const std::string& name, const physx::PxVec3& scale) con
 	glScaled(scale.x, scale.y, scale.z);
 	auto& mesh = meshes.at(name);
 	renderMesh(mesh);
+}
+
+const std::vector<float>& Model::getMesh(const std::string& meshName) const
+{
+	return meshes.at(meshName).data;
 }
 
 void Model::renderMesh(const Mesh& mesh) const

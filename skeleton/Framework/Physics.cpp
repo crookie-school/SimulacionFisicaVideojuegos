@@ -1,4 +1,5 @@
 #include "Physics.h"
+#include <cassert>
 
 physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
@@ -43,6 +44,14 @@ Physics::Physics()
 	if (!physics)
 	{
 		std::cerr << "PxCreatePhysics failed!" << std::endl;
+		exit(1);
+	}
+
+	PxCookingParams params(physics->getTolerancesScale());
+	cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, params);
+	if (!cooking)
+	{
+		std::cerr << "PxCreateCooking failed!" << std::endl;
 		exit(1);
 	}
 
@@ -147,6 +156,34 @@ physx::PxShape* Physics::createShape(const physx::PxGeometry& geom, physx::PxMat
 physx::PxMaterial* Physics::createMaterial(float staticFriction, float dynamicFriction, float restitution)
 {
 	return physics->createMaterial(staticFriction, dynamicFriction, restitution);
+}
+
+physx::PxTriangleMesh* Physics::cookMesh(const Model& model, const std::string& meshName)
+{
+	auto& verts = model.getMesh(meshName);
+	const physx::PxU32 vertexCount = static_cast<physx::PxU32>(verts.size() / 8);
+	const physx::PxU32 indicesCount = vertexCount;
+
+	std::vector<physx::PxU32> indices(vertexCount);
+	for (physx::PxU32 i = 0; i < indicesCount; ++i) indices[i] = i;
+	
+	PxTriangleMeshDesc meshDesc;
+	meshDesc.points.count = vertexCount;
+	meshDesc.points.stride = sizeof(float) * 8;
+	meshDesc.points.data = verts.data();
+
+	meshDesc.triangles.count = vertexCount / 3;
+	meshDesc.triangles.stride = 3 * sizeof(physx::PxU32);
+	meshDesc.triangles.data = indices.data();
+
+	PxDefaultMemoryOutputStream writeBuffer;
+	PxTriangleMeshCookingResult::Enum result;
+	bool status = cooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
+	if (!status)
+		return NULL;
+
+	PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+	return physics->createTriangleMesh(readBuffer);
 }
 
 bool Physics::raycast(const physx::PxVec3& origin, const physx::PxVec3& dir, float maxDistance, physx::PxRaycastBuffer& hitData)

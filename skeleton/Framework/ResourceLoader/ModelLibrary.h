@@ -12,10 +12,12 @@ public:
 		return instance;
 	}
 
-	void addModel(const std::string& path) {
+	Model& addModel(const std::string& path) {
 		if (!models.count(path)) {
 			models[path] = Model(path);
 		}
+
+		return models[path];
 	}
 
 	Model& getModel(const std::string& path){

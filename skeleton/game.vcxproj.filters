@@ -25,6 +25,8 @@
     <ClCompile Include="App\Vehicle\Car.cpp" />
     <ClCompile Include="App\Vehicle\Engine.cpp" />
     <ClCompile Include="Framework\Input.cpp" />
+    <ClCompile Include="Framework\ResourceLoader\Model.cpp" />
+    <ClCompile Include="Framework\ResourceLoader\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -60,6 +62,12 @@
     <ClInclude Include="App\Vehicle\Car.h" />
     <ClInclude Include="App\Vehicle\Engine.h" />
     <ClInclude Include="Framework\Input.h" />
+    <ClInclude Include="Framework\ResourceLoader\ModelLibrary.h" />
+    <ClInclude Include="Framework\ResourceLoader\stb_image.h" />
+    <ClInclude Include="Framework\ResourceLoader\tiny_obj_loader.h" />
+    <ClInclude Include="Framework\ResourceLoader\Model.h" />
+    <ClInclude Include="Framework\ResourceLoader\Texture.h" />
+    <ClInclude Include="App\SceneObstacle.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
